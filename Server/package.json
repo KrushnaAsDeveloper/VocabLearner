@@ -1,0 +1,30 @@
+{
+  "name": "vocablearnerserver",
+  "version": "1.0.0",
+  "description": "server side code for vocab learner project",
+  "homepage": "https://github.com/KrushnaAsDeveloper/VocabLearner#readme",
+  "bugs": {
+    "url": "https://github.com/KrushnaAsDeveloper/VocabLearner/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/KrushnaAsDeveloper/VocabLearner.git"
+  },
+  "license": "ISC",
+  "author": "krushna waghmare",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.8.0",
+    "prettier": "^3.9.6"
+  }
+}

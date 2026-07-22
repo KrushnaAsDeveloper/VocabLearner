@@ -1,0 +1,22 @@
+# Node.js artifacts
+node_modules/
+/dist
+/build
+/coverage
+.nyc_output
+
+# Configuration & Environments
+.env
+.env.*
+*.log
+
+# Lockfiles
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# IDE & System files
+.vscode/
+.idea/
+.DS_Store

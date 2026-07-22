@@ -1,0 +1,15 @@
+# Block all local environment configurations
+.env
+
+# Exclude build products and package dependencies
+node_modules/
+build/
+dist/
+
+# Avoid system artifacts
+.DS_Store
+Thumbs.db
+
+# Block log outputs but retain a specific example file
+*.log
+!example.log
