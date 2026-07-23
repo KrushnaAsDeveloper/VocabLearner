@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import jwt from 'jsonwebtoken'
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -57,3 +58,18 @@ export const loginUser = asyncHandler(async (req, res) => {
             )
         );
 });
+
+
+//Log out user
+export const logoutUser = asyncHandler( async (req, res) =>{
+    const user = await User.findById(req.user._id);
+    user.refreshToken = undefined
+    await user.save({validateBeforeSave : false})
+
+    const userWithNoRefreshToken = await User.findById(req.user._id).select("-password")
+
+    res.status(200)
+    .clearCookie("accessToken", cookieOptions)
+    .clearCookie("refreshToken", cookieOptions)
+    .json(new ApiResponse(200, userWithNoRefreshToken, "User Logged out"))
+})
