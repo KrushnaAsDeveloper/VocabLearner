@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import User from "../models/user.model.js";
 const app = express();
 
 app.use(cors({
@@ -10,5 +11,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.urlencoded({extended : true, limit:"20kb"}))
 app.use(express.json({limit:"20kb"}));
+
+
 
 export { app };
