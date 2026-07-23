@@ -68,3 +68,9 @@ Researched existing tools:
 
 ## Fit With Current Workload
 This is a new project, separate from **cosy_cloud** (MERN Airbnb-clone, currently in active development — auth, Multer/Cloudinary uploads, deployment on Render/Vercel) and ongoing **Java DSA** practice (arrays, Kadane's algorithm, prefix sum). Recommendation: get cosy_cloud to a stable/deployed checkpoint before starting heavy build-out on Vocab Learner, to avoid splitting focus across three things at once.
+
+## Features
+
+- **Saving the history** users history on the home page where the main functionality of the user starts then we are going to ask the user for 2 things first is vedio title or second is url of youtube vedio then whatever work done that how much vocab we got from this vedio and then practice correct and wrong answer kind of overall activity we are going to save it in the history section
+
+- 
