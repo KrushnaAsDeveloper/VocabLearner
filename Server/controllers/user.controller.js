@@ -73,3 +73,27 @@ export const logoutUser = asyncHandler( async (req, res) =>{
     .clearCookie("refreshToken", cookieOptions)
     .json(new ApiResponse(200, userWithNoRefreshToken, "User Logged out"))
 })
+
+
+export const refreshAccessToken = asyncHandler( async (req,res) => {
+    const refreshTokenFromCookiesAndBody = req.cookies?.refreshToken || req.body?.refreshToken
+    
+    const decode = jwt.verify(refreshTokenFromCookiesAndBody, process.env.REFRESH_TOKEN_SECRET)
+
+    const user = await User.findById(decode._id);
+
+    if(refreshTokenFromCookiesAndBody !== user.refreshToken){
+        throw new ApiError(401, "Refresh token expires !")  
+    }
+
+    const {accessToken, refreshToken} = await generateAccessAndRefreshToken(decode._id);
+
+    res.status(200)
+    .cookie("accessToken", accessToken, cookieOptions)
+    .cookie("refreshToken", refreshToken, cookieOptions)
+    .json(new ApiResponse(200, {accessToken, refreshToken}, "User logged in successfully and access token refreshed !"))
+
+
+    
+})
+
