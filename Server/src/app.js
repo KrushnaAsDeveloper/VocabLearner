@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import User from "../models/user.model.js";
 import userRoutes from "../routes/user.route.js"
+import urlRoute from "../routes/url.route.js"
 const app = express();
 
 app.use(cors({
@@ -15,6 +16,7 @@ app.use(express.json({limit:"20kb"}));
 
 // users routes from Router 
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/url", urlRoute)
 
 
 
