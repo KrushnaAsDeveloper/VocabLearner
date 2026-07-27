@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import User from "../models/user.model.js";
 import userRoutes from "../routes/user.route.js"
 import urlRoute from "../routes/url.route.js"
+import {YoutubeTranscript} from 'youtube-transcript'
 const app = express();
 
 app.use(cors({
@@ -18,7 +19,8 @@ app.use(express.json({limit:"20kb"}));
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/url", urlRoute)
 
-
+const transcript = await YoutubeTranscript.fetchTranscript('n3Z4vVzx4nw');
+console.log(transcript);
 
 app.use((err, req, res, next)=>{
   const statusCode = err.statusCode || 500
