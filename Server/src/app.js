@@ -19,8 +19,8 @@ app.use(express.json({limit:"20kb"}));
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/url", urlRoute)
 
-const transcript = await YoutubeTranscript.fetchTranscript('n3Z4vVzx4nw');
-console.log(transcript);
+// const transcript = await YoutubeTranscript.fetchTranscript('n3Z4vVzx4nw');
+// console.log(transcript);
 
 app.use((err, req, res, next)=>{
   const statusCode = err.statusCode || 500
