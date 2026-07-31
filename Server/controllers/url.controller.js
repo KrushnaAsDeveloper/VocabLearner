@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const converUrlToEmbed = asyncHandler(async (req, res) =>{
+    console.log(req.user)
     const {url} = req.body
     if(!url){
         throw new ApiError(404, "Url not found")
@@ -12,8 +13,10 @@ export const converUrlToEmbed = asyncHandler(async (req, res) =>{
         throw new ApiError(400, "Enter the valid youtube link")
     }
     const saveUrl = await Url.create({
-        url : url
+        url : url,
+        student : req.user._id
     })
+    
     
 
     res.status(201).json(new ApiResponse(201, saveUrl, "Url converted successfully"))
