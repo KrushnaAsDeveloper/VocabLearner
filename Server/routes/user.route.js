@@ -11,5 +11,5 @@ router.post("/logout", verifyJWT,  logoutUser)
 // refresh access token 
 router.post("/re-login", refreshAccessToken)
 // edit password 
-router.post("/edit-user-pass", editUserRoute)
+router.post("/edit-user-pass",verifyJWT, editUserRoute)
 export default router

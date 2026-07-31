@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-const cookieOptions = JSON.parse(process.env.COOKIE_OPTIONS);
+const cookieOptionsForAccess = JSON.parse(process.env.ACCESS_COOKIE_OPTIONS);
+const cookieOptionsForRefresh = JSON.parse(process.env.REFRESH_COOKIE_OPTIONS);
 //Generate access and refresh token
 async function generateAccessAndRefreshToken(userId) {
     const user = await User.findById(userId);
@@ -50,8 +51,8 @@ export const loginUser = asyncHandler(async (req, res) => {
     );
 
     res.status(200)
-        .cookie("accessToken", accessToken, cookieOptions)
-        .cookie("refreshToken", refreshToken, cookieOptions)
+        .cookie("accessToken", accessToken, cookieOptionsForAccess)
+        .cookie("refreshToken", refreshToken, cookieOptionsForRefresh)
         .json(
             new ApiResponse(
                 200,
@@ -72,8 +73,8 @@ export const logoutUser = asyncHandler(async (req, res) => {
     );
 
     res.status(200)
-        .clearCookie("accessToken", cookieOptions)
-        .clearCookie("refreshToken", cookieOptions)
+        .clearCookie("accessToken", cookieOptionsForAccess)
+        .clearCookie("refreshToken", cookieOptionsForRefresh)
         .json(new ApiResponse(200, userWithNoRefreshToken, "User Logged out"));
 });
 
@@ -97,8 +98,8 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     );
 
     res.status(200)
-        .cookie("accessToken", accessToken, cookieOptions)
-        .cookie("refreshToken", refreshToken, cookieOptions)
+        .cookie("accessToken", accessToken, cookieOptionsForAccess)
+        .cookie("refreshToken", refreshToken, cookieOptionsForRefresh)
         .json(
             new ApiResponse(
                 200,
@@ -110,21 +111,15 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 
 export const editUserRoute = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body;
-    // get the existing id from the token
     if(oldPassword === newPassword){
         throw new ApiError(400, "New password is same as old one please try again !")
     }
-    const token =
-        req.cookies?.accessToken ||
-        req.header("Authorization")?.replace("Bearer ", "");
-
-    if (!token) {
-        throw new ApiError(401, "Unauthorized User, Not logged it");
+    const id = req.user._id
+       
+    if (!id) {
+        throw new ApiError(401, "Unauthorized User, Not logged in");
     }
-
-    const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    
-    const user = await User.findById(decode._id);
+    const user = await User.findById(id);
     const checkOldpassword = await user.comparePassword(oldPassword);
     if(!checkOldpassword){
         throw new ApiError(400, "Old password is incorrect, please enter valid password")
@@ -136,13 +131,13 @@ export const editUserRoute = asyncHandler(async (req, res) => {
     user.refreshToken = undefined;
     await user.save();
 
-    const newUser = await User.findById(decode._id).select(
+    const newUser = await User.findById(id).select(
         "-password -refreshToken"
     );
 
     res.status(200)
-        .clearCookie("accessToken", cookieOptions)
-        .clearCookie("refreshToken", cookieOptions)
+        .clearCookie("accessToken", cookieOptionsForAccess)
+        .clearCookie("refreshToken", cookieOptionsForRefresh)
         .json(
             new ApiResponse(
                 201,
