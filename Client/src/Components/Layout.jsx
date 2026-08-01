@@ -7,9 +7,9 @@ function Layout() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-slate-950">
+      <main className="h-screen bg-slate-950">
         <Outlet />
-      </main>
+      </main> 
       <Footer />
     </>
   )
