@@ -34,8 +34,9 @@ function Signup() {
     
   }
   return (
-    <div className="h-full bg-[#010617] flex items-center justify-center flex-col px-4">
-      <div className='text-center text-[#FDC700] text-4xl font-bold my-4'>Sign Up</div>
+    <div className=" bg-[#010617]">
+      <div  className='h-screen flex justify-center items-center flex-col'>
+        <div className='text-center text-[#FDC700]  text-4xl font-bold my-4'>Sign Up</div>
       <form
         onSubmit={handleOnsubmit}
         className="w-full max-w-md bg-[#0F172C] border border-white/10 rounded-2xl p-8 space-y-4 text-white"
@@ -70,6 +71,7 @@ function Signup() {
           {loading ? <DotSpinner/> : "SignUp"}
         </button>
       </form>
+      </div>
     </div>
   )
 }

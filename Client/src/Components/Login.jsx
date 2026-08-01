@@ -34,7 +34,8 @@ function Login() {
     
   }
   return (
-    <div className="h-full bg-[#010617] flex items-center justify-center flex-col px-4">
+    <div className='bg-[#010617]'>
+      <div className="h-screen flex items-center justify-center flex-col px-4">
       <div className='text-center text-[#FDC700] text-4xl font-bold my-4'>Login</div>
       <form
         onSubmit={handleOnsubmit}
@@ -70,6 +71,7 @@ function Login() {
           {loading ? <DotSpinner/> : "Login"}
         </button>
       </form>
+    </div>
     </div>
   )
 }
