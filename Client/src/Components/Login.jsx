@@ -7,7 +7,7 @@ import DotSpinner from "../assets/svg/dot.svg?react"
 import axios from "axios"
 function Login() {
   let navigate = useNavigate()
-  const [signUp, setSignUp] = useState({
+  const [login, setSignUp] = useState({
     email: "",
     password: ""
   })
@@ -20,7 +20,7 @@ function Login() {
     try {
       e.preventDefault()
       setLoading(true)
-      const res = await axios.post("http://localhost:8080/api/v1/users/login", signUp, {withCredentials:true})
+      const res = await axios.post("http://localhost:8080/api/v1/users/login", login, {withCredentials:true})
       console.log(res.data)
     } catch (error) {
       
