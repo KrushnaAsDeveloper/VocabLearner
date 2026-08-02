@@ -9,7 +9,7 @@ function GettingVedioPage() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  const [success, setSuccess ] = useState("")
   const handleInput = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -27,16 +27,28 @@ function GettingVedioPage() {
         try {
           const res = await axios.post(
             "http://localhost:8080/api/v1/url/convert",
-            form,{withCredentials : true}
+            form,
+            { withCredentials: true },
           );
           setUrl(res.data.data.url);
         } catch (err) {
           if (err.response?.status == 401) {
-            alert("User not logged in")
-        navigate("/login");
-      } else {
-        setError(err.response?.data?.message || "Something went wrong. Try again.");
-      }
+            await axios.get("http://localhost:8080/api/v1/users/re-login", {
+              withCredentials: true,
+            });
+          {
+            
+            setSuccess("Click Again ! We re-login you again because token expires")
+            setInterval(() => {
+              setSuccess("")
+            }, 3000);
+          }
+            
+          } else {
+            setError(
+              err.response?.data?.message || "Something went wrong. Try again.",
+            );
+          }
         }
       } else {
         if (!file) {
@@ -48,13 +60,17 @@ function GettingVedioPage() {
         formData.append("video", file);
         const res = await axios.post(
           "http://localhost:8080/api/v1/url/upload",
-          formData, {withCredentials : true}
+          formData,
+          { withCredentials: true },
         );
         setUrl(res.data.data.url);
       }
     } catch (err) {
-        setError(err.response?.data?.message || "Something went wrong. Try again.");
-      
+      setError(
+        err.response?.data?.message || "Something went wrong. Try again.",
+      );
+      alert("Please Login first !")
+      navigate("/login")
     } finally {
       setLoading(false);
     }
@@ -140,8 +156,9 @@ function GettingVedioPage() {
             </label>
           )}
 
-          {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
 
+          {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
+          {success && <p className="text-green-500 text-sm mt-3">{success}</p>}
           <button
             type="submit"
             disabled={loading}
