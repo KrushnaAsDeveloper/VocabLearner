@@ -30,7 +30,6 @@ export const converUrlToEmbed = asyncHandler(async (req, res) =>{
     if (!videoId) throw new ApiError(404, "invalid youtube url || url controller")
     
     let existed = await Url.findOne({VideoId : videoId});
-    console.log(existed)    
     if(existed === null){
 
         existed = await Url.create({
