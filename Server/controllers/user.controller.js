@@ -78,6 +78,8 @@ export const logoutUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, userWithNoRefreshToken, "User Logged out"));
 });
 
+// refreshAccessToken controller
+
 export const refreshAccessToken = asyncHandler(async (req, res) => {
     const refreshTokenFromCookiesAndBody =
         req.cookies?.refreshToken || req.body?.refreshToken;
@@ -108,6 +110,9 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
             )
         );
 });
+
+
+// edit password contrller
 
 export const editUserRoute = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body;
