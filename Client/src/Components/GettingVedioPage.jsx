@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useVideo } from "../Context/VideoContext";
 import { useNavigate } from "react-router-dom";
 function GettingVedioPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState("url"); // "url" | "upload"
   const [form, setForm] = useState({ url: "" });
   const [file, setFile] = useState(null);
-  const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess ] = useState("")
+  const [success, setSuccess] = useState("");
   const handleInput = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
+  const { currentVideoUrl, setCurrentVideoUrl, object, setObject } = useVideo();
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -30,20 +30,25 @@ function GettingVedioPage() {
             form,
             { withCredentials: true },
           );
-          setUrl(res.data.data.url);
+          setObject({ url: res.data.data.url, title: res.data.data.title });
+          setCurrentVideoUrl(res.data.data.url);
+          navigate("/video-player");
+
+          console.log(url);
+          console.log(currentVideoUrl);
         } catch (err) {
           if (err.response?.status == 401) {
             await axios.get("http://localhost:8080/api/v1/users/re-login", {
               withCredentials: true,
             });
-          {
-            
-            setSuccess("Click Again ! We re-login you again because token expires")
-            setInterval(() => {
-              setSuccess("")
-            }, 3000);
-          }
-            
+            {
+              setSuccess(
+                "Click Again ! We re-login you again because token expires",
+              );
+              setInterval(() => {
+                setSuccess("");
+              }, 3000);
+            }
           } else {
             setError(
               err.response?.data?.message || "Something went wrong. Try again.",
@@ -69,16 +74,16 @@ function GettingVedioPage() {
       setError(
         err.response?.data?.message || "Something went wrong. Try again.",
       );
-      alert("Please Login first !")
-      navigate("/login")
+      alert("Please Login first !");
+      navigate("/login");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center px-4 py-16">
-      <div className="w-full max-w-xl">
+    <div className="h-[100vh] bg-slate-950 text-slate-100 flex flex-col items-center py-30">
+      <div className="w-full md:w-xl w-sm">
         <h1 className="text-3xl font-bold text-center mb-2">Get Your Video</h1>
         <p className="text-slate-400 text-center mb-8">
           Paste a YouTube URL or upload a video file to get started.
@@ -156,7 +161,6 @@ function GettingVedioPage() {
             </label>
           )}
 
-
           {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
           {success && <p className="text-green-500 text-sm mt-3">{success}</p>}
           <button
@@ -168,20 +172,6 @@ function GettingVedioPage() {
             {loading ? "Processing..." : "Get Video"}
           </button>
         </form>
-
-        {url && (
-          <div className="mt-8 rounded-xl overflow-hidden shadow-xl border border-slate-800">
-            <iframe
-              width="100%"
-              height="315"
-              src={url}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              title="video-player"
-            ></iframe>
-          </div>
-        )}
       </div>
     </div>
   );
