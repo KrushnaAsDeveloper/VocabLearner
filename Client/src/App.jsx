@@ -8,24 +8,26 @@ import AboutPage from './Components/AboutPage.jsx'
 import HistoryPage from './Components/HistoryPage.jsx'
 import Login from './Components/Login.jsx'
 import Signup from './Components/Signup.jsx'
+import VideoPlyer from './Components/VideoPlayer.jsx'
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,       // parent route renders Navbar + Outlet + Footer
     children: [
       { index: true, element: <LandingPage /> },
-      {path : "/fetch-vedio", element : <GettingVedioPage/> }, 
+      {path : "/fetch-video", element : <GettingVedioPage/> }, 
       {path : "/progress", element :<ProgressPage/>},
       {path : "/about", element :<AboutPage/>}, 
       {path : "/history", element :<HistoryPage/>}, 
       {path : "/login", element: <Login/>}, 
-      {path : "/signup", element: <Signup/>}
+      {path : "/signup", element: <Signup/>}, 
+      {path : "/video-player", element : <VideoPlyer/>}
     ],
   },
 ])
 
 function App() {
-  return <RouterProvider router={router} />
+    return <RouterProvider router={router} />
 }
 
 export default App
