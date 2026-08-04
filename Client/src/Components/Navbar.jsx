@@ -16,15 +16,15 @@ function Navbar() {
   const navLinkClass = ({ isActive }) =>
     `text-sm transition-all duration-200 ${
       isActive
-        ? "text-white border border-white/20 rounded-md px-2 py-1"
-        : "text-slate-400 hover:text-white border border-transparent px-2 py-1"
+        ? "text-slate-900 dark:text-white border border-slate-300 dark:border-white/20 rounded-md px-2 py-1"
+        : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-transparent px-2 py-1"
     }`
 
   return (
-    <nav className="bg-slate-950 border-b border-slate-800 sticky top-0 z-50 transition-all duration-300">
+    <nav className="bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         {/* Logo */}
-        <Link to="/" className="text-xl font-bold text-white">
+        <Link to="/" className="text-xl font-bold text-slate-900 dark:text-white">
           Vocab<span className="text-indigo-500">ly</span>
         </Link>
 
@@ -46,7 +46,7 @@ function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           <Link
             to="/login"
-            className="text-sm text-slate-400 hover:text-white transition-colors px-4 py-2"
+            className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors px-4 py-2"
           >
             Log in
           </Link>
@@ -61,7 +61,7 @@ function Navbar() {
 
         {/* Mobile toggle */}
         <button
-          className="md:hidden text-slate-300"
+          className="md:hidden text-slate-600 dark:text-slate-300"
           onClick={() => setOpen(!open)}
         >
           <svg className="w-6 h-6 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -76,7 +76,7 @@ function Navbar() {
 
       {/* Mobile menu */}
       <div
-        className={`md:hidden bg-slate-900 border-t border-slate-800 overflow-hidden transition-all duration-300 ease-in-out ${
+        className={`md:hidden bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-300 ease-in-out ${
           open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
@@ -92,8 +92,8 @@ function Navbar() {
               {link.name}
             </NavLink>
           ))}
-          <div className="flex flex-col gap-2 pt-3 border-t border-slate-800">
-            <Link to="/login" className="text-sm text-slate-300 hover:text-white transition-colors">
+          <div className="flex flex-col gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+            <Link to="/login" className="text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
               Log in
             </Link>
             <Link

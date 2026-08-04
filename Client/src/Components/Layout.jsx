@@ -7,7 +7,7 @@ function Layout() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-slate-950">
+      <main className="min-h-screen bg-white dark:bg-slate-950">
         <Outlet />
       </main> 
       <Footer />

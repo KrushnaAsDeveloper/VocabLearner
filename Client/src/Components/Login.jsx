@@ -34,19 +34,19 @@ function Login() {
     
   }
   return (
-    <div className='bg-[#010617]'>
+    <div className='bg-white dark:bg-[#010617]'>
       <div className="h-screen flex items-center justify-center flex-col px-4">
-      <div className='text-center text-[#FDC700] text-4xl font-bold my-4'>Login</div>
+      <div className='text-center text-amber-600 dark:text-[#FDC700] text-4xl font-bold my-4'>Login</div>
       <form
         onSubmit={handleOnsubmit}
-        className="w-full max-w-md bg-[#0F172C] border border-white/10 rounded-2xl p-8 space-y-4 text-white"
+        className="w-full max-w-md bg-slate-50 dark:bg-[#0F172C] border border-slate-200 dark:border-white/10 rounded-2xl p-8 space-y-4 text-slate-900 dark:text-white"
       >
         <input
           type="text"
           onChange={handleInput}
           name='email'
           placeholder="you@example.com"
-          className="w-full bg-[#05070d] border border-white/10 rounded-lg px-4 py-2.5 text-sm placeholder-gray-500 focus:outline-none focus:border-indigo-400"
+          className="w-full bg-white dark:bg-[#05070d] border border-slate-300 dark:border-white/10 rounded-lg px-4 py-2.5 text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-indigo-400"
         />
         <div className="relative">
           <input
@@ -54,14 +54,14 @@ function Login() {
             onChange={handleInput}
             name='password'
             placeholder="At least 6 characters"
-            className="w-full bg-[#05070d] border border-white/10 rounded-lg px-4 py-2.5 pr-10 text-sm placeholder-gray-500 focus:outline-none focus:border-indigo-400"
+            className="w-full bg-white dark:bg-[#05070d] border border-slate-300 dark:border-white/10 rounded-lg px-4 py-2.5 pr-10 text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-indigo-400"
           />
           <button
             onClick={() => types == "password" ? SetTypes("text") : SetTypes("password")}
             type='button'
             className="absolute right-3 top-1/2 -translate-y-1/2"
           >
-            {types == "password" ? <FontAwesomeIcon icon={faEye} className="text-gray-400 text-sm" /> : <FontAwesomeIcon icon={faEyeSlash} className="text-gray-400 text-sm" />}
+            {types == "password" ? <FontAwesomeIcon icon={faEye} className="text-gray-500 dark:text-gray-400 text-sm" /> : <FontAwesomeIcon icon={faEyeSlash} className="text-gray-500 dark:text-gray-400 text-sm" />}
           </button>
         </div>
         <button

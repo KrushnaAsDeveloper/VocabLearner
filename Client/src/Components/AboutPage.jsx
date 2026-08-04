@@ -37,14 +37,14 @@ const features = [
 
 function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#010617] text-white">
+    <div className="min-h-screen bg-white dark:bg-[#010617] text-slate-900 dark:text-white">
 
       {/* Hero */}
       <section className="max-w-3xl mx-auto text-center px-4 pt-20 pb-14">
         <h1 className="text-4xl font-bold mb-4">
           Learn vocabulary from any video
         </h1>
-        <p className="text-gray-400 text-lg">
+        <p className="text-gray-600 dark:text-gray-400 text-lg">
           Paste a video, get its vocabulary extracted, and learn it without ever leaving the video.
         </p>
       </section>
@@ -55,11 +55,11 @@ function AboutPage() {
           {features.map((f) => (
             <div
               key={f.title}
-              className="bg-[#0b0f1a] border border-white/10 rounded-2xl p-6"
+              className="bg-slate-50 dark:bg-[#0b0f1a] border border-slate-200 dark:border-white/10 rounded-2xl p-6"
             >
-              <FontAwesomeIcon icon={f.icon} className="text-indigo-400 text-lg mb-3" />
+              <FontAwesomeIcon icon={f.icon} className="text-indigo-500 dark:text-indigo-400 text-lg mb-3" />
               <h3 className="font-medium mb-2">{f.title}</h3>
-              <p className="text-sm text-gray-400 leading-relaxed">{f.desc}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
@@ -72,14 +72,14 @@ function AboutPage() {
           {steps.map((s, i) => (
             <div
               key={s.title}
-              className="flex gap-4 bg-[#0b0f1a] border border-white/10 rounded-2xl p-5"
+              className="flex gap-4 bg-slate-50 dark:bg-[#0b0f1a] border border-slate-200 dark:border-white/10 rounded-2xl p-5"
             >
-              <div className="shrink-0 w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-medium">
+              <div className="shrink-0 w-8 h-8 rounded-full bg-indigo-500/20 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm font-medium">
                 {i + 1}
               </div>
               <div>
                 <h3 className="font-medium mb-1">{s.title}</h3>
-                <p className="text-sm text-gray-400">{s.desc}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{s.desc}</p>
               </div>
             </div>
           ))}
@@ -89,13 +89,13 @@ function AboutPage() {
       {/* Who it's for */}
       <section className="max-w-2xl mx-auto text-center px-4 pb-24">
         <h2 className="text-xl font-bold mb-3">Who it's for</h2>
-        <p className="text-gray-400">
+        <p className="text-gray-600 dark:text-gray-400">
           Language learners, students prepping for exams, and anyone who picks up
           new words faster from real content than from word lists.
         </p>
         <Link
           to="/signup"
-          className="inline-block mt-6 bg-indigo-500 hover:bg-indigo-400 transition px-6 py-2.5 rounded-lg font-medium"
+          className="inline-block mt-6 bg-indigo-500 hover:bg-indigo-400 transition px-6 py-2.5 rounded-lg font-medium text-white"
         >
           Get started
         </Link>

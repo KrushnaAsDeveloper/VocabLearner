@@ -31,10 +31,10 @@ function DarkModeButton() {
     <ThemeContextProvider value={{ themeMode, lightMode, darkMode }}>
       <div className="transition-colors duration-150">
         
-        <button className="border cursor-pointer flex justify-center items-center rounded-full w-10 h-10" style={{backgroundColor : themeMode == "light" ? "#FDC700" : "#4F39F6" }} onClick={changeThemeValue}> {themeMode === "light" ? (
-          <FontAwesomeIcon className="text-2xl text-black" icon={faMoon} />
+        <button className=" cursor-pointer bg-[#4F39F6] flex justify-center items-center rounded-full w-9 h-9"  onClick={changeThemeValue}> {themeMode === "light" ? (
+          <FontAwesomeIcon className="text-xl text-white" icon={faMoon} />
         ) : (
-          <FontAwesomeIcon className="text-white text-2xl" icon={faSun} />
+          <FontAwesomeIcon className="text-white text-xl" icon={faSun} />
         )}</button>
       </div>    
     </ThemeContextProvider>
