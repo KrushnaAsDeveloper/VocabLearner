@@ -92,6 +92,7 @@ function Navbar() {
               {link.name}
             </NavLink>
           ))}
+          <DarkModeButton/>
           <div className="flex flex-col gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
             <Link to="/login" className="text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
               Log in
@@ -105,6 +106,7 @@ function Navbar() {
           </div>
         </div>
       </div>
+
     </nav>
   )
 }
