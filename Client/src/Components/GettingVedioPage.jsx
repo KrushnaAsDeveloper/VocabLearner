@@ -39,7 +39,7 @@ function GettingVedioPage() {
             { withCredentials: true },
           );
           setObject({ url: res.data.data.url, title: res.data.data.title });
-          setCurrentVideoUrl(res.data.data.url);
+          await localStorage.setItem("url", res.data.data.url)
           navigate("/video-player");
         } catch (err) {
           if (err.response?.status == 401) {
