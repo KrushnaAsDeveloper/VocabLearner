@@ -4,14 +4,14 @@ const VideoContext = createContext()
 
 
 
-export function VideoProvider({children}) {
-    const [currentVideoUrl, setCurrentVideoUrl] = useState("")
+export  function VideoProvider({children}) {
+    const curretUrl =  localStorage.getItem("url")
     const [object, setObject] = useState({
         url : "", 
         title : ""
     })
     return(
-        <VideoContext.Provider value={{currentVideoUrl, setCurrentVideoUrl, object, setObject}}>
+        <VideoContext.Provider value={{ object, setObject, curretUrl}}>
             {children}
         </VideoContext.Provider>
     )
