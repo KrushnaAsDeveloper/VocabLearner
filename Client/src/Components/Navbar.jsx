@@ -1,7 +1,7 @@
 // Navbar.jsx
 import React, { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-
+import DarkModeButton from './DarkModeButton'
 function Navbar() {
   const [open, setOpen] = useState(false)
 
@@ -56,7 +56,8 @@ function Navbar() {
           >
             Sign up
           </Link>
-        </div>
+            <DarkModeButton/>
+                  </div>
 
         {/* Mobile toggle */}
         <button
