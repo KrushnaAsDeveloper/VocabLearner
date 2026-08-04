@@ -3,7 +3,7 @@ import { ThemeContextProvider } from "../Context/Theme";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 function DarkModeButton() {
-  const [themeMode, setThemeMode] = useState("light");
+  const [themeMode, setThemeMode] = useState("dark");
 
   function lightMode() {
     setThemeMode("light");
