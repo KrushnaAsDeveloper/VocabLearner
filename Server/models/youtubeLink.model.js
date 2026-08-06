@@ -52,7 +52,7 @@ youtubeLinkSchema.pre("validate", async function getYouTubeEmbedUrl() {
     const res = await axios.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${process.env.YOUTUBE_API_KEY_V3}`) 
 
     this.title = res.data.items[0].snippet.title
-    this.thumbnail = res.data.items[0].snippet.thumbnails.high.url
+    this.thumbnail = res.data.items[0].snippet.thumbnails.maxres.url
     this.VideoId = videoId
     this.url = `https://www.youtube.com/embed/${videoId}`;
     return
