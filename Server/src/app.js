@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import User from "../models/user.model.js";
 import userRoutes from "../routes/user.route.js"
 import urlRoute from "../routes/url.route.js"
+import historyRoute from "../routes/history.routes.js"
 import {YoutubeTranscript} from 'youtube-transcript'
 const app = express();
 
@@ -18,7 +19,7 @@ app.use(express.json({limit:"20kb"}));
 // users routes from Router 
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/url", urlRoute)
-
+app.use("/api/v1/history", historyRoute)
 // const transcript = await YoutubeTranscript.fetchTranscript('n3Z4vVzx4nw');
 // console.log(transcript);
 
