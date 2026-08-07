@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faL, faTextWidth } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { replace, useNavigate } from 'react-router-dom';
 import DotSpinner from "../assets/svg/dot.svg?react"
-
+import { useAuthContext } from '../Context/authContext';
 import axios from "axios"
 function Login() {
   let navigate = useNavigate()
+  const {setUserStatus} = useAuthContext()
   const [login, setSignUp] = useState({
     email: "",
     password: ""
@@ -28,7 +29,7 @@ function Login() {
       setLoading(false)
       
     }finally{
-      setLoading(false)
+      setUserStatus(true)
       navigate("/", {replace : true})
     }
     
