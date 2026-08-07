@@ -2,9 +2,11 @@
 import React, { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import DarkModeButton from './DarkModeButton'
+import axios from "axios"
+import { useAuthContext } from '../Context/authContext'
 function Navbar() {
   const [open, setOpen] = useState(false)
-
+  
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Learn", path: "/fetch-video" },
@@ -14,11 +16,19 @@ function Navbar() {
   ]
 
   const navLinkClass = ({ isActive }) =>
-    `text-sm transition-all duration-200 ${
+    `text-sm transition-all duration-300 ${
       isActive
         ? "text-slate-900 dark:text-white border border-slate-300 dark:border-white/20 rounded-md px-2 py-1"
         : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-transparent px-2 py-1"
     }`
+    const {userStatus, setUserStatus} = useAuthContext()
+    console.log(userStatus)
+    const logoutUser =  async()=>{
+      setUserStatus(false)
+     return await axios.get("http://localhost:8080/api/v1/users/logout", {withCredentials : true})
+
+
+    }
 
   return (
     <nav className="bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 transition-all duration-300">
@@ -44,12 +54,17 @@ function Navbar() {
 
         {/* Auth buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Link
+          
+          {userStatus ? <button onClick={logoutUser}
+            className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors px-4 py-2"
+          >
+            Log Out
+          </button> : <Link 
             to="/login"
             className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors px-4 py-2"
           >
             Log in
-          </Link>
+          </Link> }
           <Link
             to="/signup"
             className="text-sm bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg transition-colors"
