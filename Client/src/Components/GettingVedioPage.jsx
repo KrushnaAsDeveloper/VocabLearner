@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useVideo } from "../Context/VideoContext";
 import { useNavigate } from "react-router-dom";
+import toast, {Toaster} from "react-hot-toast";
 
 function GettingVedioPage() {
   const navigate = useNavigate();
@@ -9,8 +10,6 @@ function GettingVedioPage() {
   const [form, setForm] = useState({ url: "" });
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [isDark, setIsDark] = useState(false);
 
   const toggleTheme = () => {
@@ -28,7 +27,6 @@ function GettingVedioPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
     try {
       if (mode === "url") {
@@ -37,7 +35,11 @@ function GettingVedioPage() {
             "http://localhost:8080/api/v1/url/convert",
             form,
             { withCredentials: true },
+
           );
+          toast.success(res.data.message , {
+            toasterId : "video-player"
+          })
           setObject({ url: res.data.data.url, title: res.data.data.title });
           await localStorage.setItem("url", res.data.data.url)
           navigate("/video-player");
@@ -53,31 +55,25 @@ function GettingVedioPage() {
               setSuccess("");
             }, 3000);
           } else {
-            setError(
-              err.response?.data?.message || "Something went wrong. Try again.",
-            );
           }
         }
       } else {
         if (!file) {
-          setError("Please select a video file first");
           setLoading(false);
           return;
         }
         const formData = new FormData();
         formData.append("video", file);
         const res = await axios.post(
-          "http://localhost:8080/api/v1/url/upload",
+          "http://localhost:8080/api/v1/url/upload",// Pending : Make it funtional using multer and cloudinary
           formData,
           { withCredentials: true },
         );
         setUrl(res.data.data.url);
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Something went wrong. Try again.",
-      );
-      alert("Please Login first !");
+      
+      toast.error("Please Login First !", {toasterId : "getting-video"})
       navigate("/login");
     } finally {
       setLoading(false);
@@ -85,6 +81,8 @@ function GettingVedioPage() {
   };
 
   return (
+    <>
+     
     <div className="h-[100vh] bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col items-center py-30 transition-colors">
       <button
         type="button"
@@ -171,9 +169,6 @@ function GettingVedioPage() {
               />
             </label>
           )}
-
-          {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
-          {success && <p className="text-green-500 text-sm mt-3">{success}</p>}
           <button
             type="submit"
             disabled={loading}
@@ -185,6 +180,7 @@ function GettingVedioPage() {
         </form>
       </div>
     </div>
+    </>
   );
 }
 

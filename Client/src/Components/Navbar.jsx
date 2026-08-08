@@ -1,10 +1,13 @@
 // Navbar.jsx
 import React, { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import DarkModeButton from './DarkModeButton'
 import axios from "axios"
 import { useAuthContext } from '../Context/authContext'
+
+import toast from 'react-hot-toast'
 function Navbar() {
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   
   const navLinks = [
@@ -22,12 +25,13 @@ function Navbar() {
         : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-transparent px-2 py-1"
     }`
     const {userStatus, setUserStatus} = useAuthContext()
-    console.log(userStatus)
     const logoutUser =  async()=>{
       setUserStatus(false)
-     return await axios.get("http://localhost:8080/api/v1/users/logout", {withCredentials : true})
-
-
+     const res = await axios.get("http://localhost:8080/api/v1/users/logout", {withCredentials : true})
+      toast.success(res.data.message , {
+        toasterId : "loginPageForLogout"
+      })
+      navigate("/login")
     }
 
   return (

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useVideo } from '../Context/VideoContext'
 import Vedioloader from "../assets/svg/videoloader.svg?react"
+import { Toaster } from 'react-hot-toast'
 function VideoPlyer() {
   const [loaded, setLoaded] = useState(false)
   const { object, setObject, curretUrl } = useVideo()
@@ -12,6 +13,21 @@ function VideoPlyer() {
 
   return (
     <>
+     <Toaster
+            position="top-center"
+            reverseOrder={false}
+            gutter={8}
+            toasterId='video-player'
+            toastOptions={{
+              className : "mt-15", 
+              duration : 3000,
+              removeDelay : 1000, 
+              style :{
+                backgroundColor: "green", 
+                color : "white"
+              }
+            }}
+          />
       <div className='flex justify-center items-center h-full flex-col bg-white dark:bg-slate-950'>
         <h1 className='text-amber-600 dark:text-[#FDC700] font-bold text-3xl italic mt-10'>{object.title}</h1>
 

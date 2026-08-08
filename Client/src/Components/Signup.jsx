@@ -4,6 +4,7 @@ import { faEye, faEyeSlash, faL, faTextWidth } from "@fortawesome/free-solid-svg
 import { replace, useNavigate } from 'react-router-dom';
 import axios from "axios"
 import DotSpinner from "../assets/svg/dot.svg?react"
+import toast from 'react-hot-toast';
 
 function Signup() {
   let navigate = useNavigate()
@@ -13,6 +14,7 @@ function Signup() {
   })
   const [types, SetTypes] = useState("password")
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const handleInput = (e) => {
     setSignUp(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
@@ -21,16 +23,19 @@ function Signup() {
       e.preventDefault()
       setLoading(true)
       const res = await axios.post("http://localhost:8080/api/v1/users/register", signUp, {withCredentials:true})
-      console.log(res.data)
+      toast.success(res.data.message, {
+        toasterId : "loginPageForSignup"
+      })
     } catch (error) {
-      
-      alert(error)
       setLoading(false)
-      
-    }finally{
-      setLoading(false)
-      navigate("/login", {replace : true})
+      setError(error.response.data.message)
+      setInterval(() => {
+        setError("")
+      }, 3000);
+      return
     }
+      navigate("/login", {replace : true})
+    
     
   }
   return (
@@ -63,6 +68,11 @@ function Signup() {
           >
             {types == "password" ? <FontAwesomeIcon icon={faEye} className="text-gray-500 dark:text-gray-400 text-sm" /> : <FontAwesomeIcon icon={faEyeSlash} className="text-gray-500 dark:text-gray-400 text-sm" />}
           </button>
+        </div>
+        <div>
+          <div className="text-red-500 text-sm">
+            {error}
+          </div>
         </div>
         <button
           type='submit'

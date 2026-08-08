@@ -1,0 +1,31 @@
+import React, { useState } from 'react'
+import axios from 'axios'
+import { Toaster } from 'react-hot-toast'
+function LandingPage() {
+  return (
+    <div className="min-h-screen  text-slate-100 flex flex-col items-center px-4 py-16">
+       <Toaster
+            position="top-center"
+            reverseOrder={false}
+            gutter={8}
+            toasterId='afterLogin'
+            toastOptions={{
+              className : "mt-15", 
+              duration : 3000,
+              removeDelay : 1000, 
+              style :{
+                backgroundColor: "green", 
+                color : "white"
+              }
+            }}
+          />
+          <h1 className='text-yellow-400 text-3xl mt-20 text-center font-bold flex  italic justify-center items-center'>🚧 Landing Page Under Development 
+
+              <svg className='mx-4' version="1.1" id="L2" xmlns="http://www.w3.org/2000/svg"  xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" width={40}xml:space="preserve"><circle fill="none" stroke="currentColor" strokeWidth="4" stroke-miterlimit="10" cx="50" cy="50" r="48"/><line fill="none" stroke-linecap="round" stroke="currentColor" strokeWidth="4" stroke-miterlimit="10" x1="50" y1="50" x2="85" y2="50.5"><animateTransform attributeName="transform" dur="2s" type="rotate" from="0 50 50" to="360 50 50" repeatCount="indefinite"/></line><line fill="none" stroke-linecap="round" stroke="currentColor" strokeWidth="4" stroke-miterlimit="10" x1="50" y1="50" x2="49.5" y2="74"><animateTransform attributeName="transform" dur="15s" type="rotate" from="0 50 50" to="360 50 50" repeatCount="indefinite"/></line></svg>
+            
+          </h1>
+    </div>
+  )
+}
+
+export default LandingPage
