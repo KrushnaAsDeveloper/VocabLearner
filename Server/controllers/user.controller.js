@@ -42,7 +42,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     }
 
     const passwordVerify = await user.comparePassword(password.trim());
-    if (!passwordVerify) throw new ApiError(401, "Unauthorize User");
+    if (!passwordVerify) throw new ApiError(401, "Wrong password");
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
         user._id
     );
@@ -75,7 +75,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
     res.status(200)
         .clearCookie("accessToken", cookieOptionsForAccess)
         .clearCookie("refreshToken", cookieOptionsForRefresh)
-        .json(new ApiResponse(200, userWithNoRefreshToken, "User Logged out"));
+        .json(new ApiResponse(200, userWithNoRefreshToken, "User Logged Out Successfully"));
 });
 
 // refreshAccessToken controller
@@ -151,3 +151,10 @@ export const editUserRoute = asyncHandler(async (req, res) => {
             )
         );
 });
+
+
+// to check use log in or not 
+
+export const isLoggedIn = asyncHandler(async (req, res)=>{
+    res.status(200).json(new ApiResponse(200, req.user, "User is logged in"))
+})
