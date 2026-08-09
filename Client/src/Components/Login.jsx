@@ -82,7 +82,7 @@ function Login() {
             position="top-center"
             reverseOrder={false}
             gutter={8}
-            toasterId="getting-video"
+            toasterId="login-first"
             toastOptions={{
               className : "mt-15", 
               duration : 3000,

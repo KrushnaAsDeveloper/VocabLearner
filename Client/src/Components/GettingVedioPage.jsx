@@ -3,7 +3,7 @@ import axios from "axios";
 import { useVideo } from "../Context/VideoContext";
 import { useNavigate } from "react-router-dom";
 import toast, {Toaster} from "react-hot-toast";
-
+import { useAuthContext } from "../Context/authContext";
 function GettingVedioPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState("url");
@@ -12,15 +12,15 @@ function GettingVedioPage() {
   const [loading, setLoading] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
-  const toggleTheme = () => {
-    document.documentElement.classList.toggle("dark");
-    setIsDark((prev) => !prev);
-  };
-
+  
   const handleInput = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
+  // video context
   const { currentVideoUrl, setCurrentVideoUrl, object, setObject } = useVideo();
+//auth contest
+const {userStatus} = useAuthContext()
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -37,60 +37,100 @@ function GettingVedioPage() {
             { withCredentials: true },
 
           );
-          toast.success(res.data.message , {
-            toasterId : "video-player"
-          })
           setObject({ url: res.data.data.url, title: res.data.data.title });
           await localStorage.setItem("url", res.data.data.url)
           navigate("/video-player");
-        } catch (err) {
-          if (err.response?.status == 401) {
-            await axios.get("http://localhost:8080/api/v1/users/re-login", {
+          toast.success(res.data.message , {
+            toasterId : "video-player"
+          })
+        } catch (error) {
+          if(userStatus == false){
+            toast.error("Login first !", {toasterId : 'login-first'})
+            navigate("/login")
+            return
+          }
+          if (error.response.status == 401) {
+            toast.success("Click Again ! We re-login you !", {toasterId : "getting-video"})
+            const res = await axios.get("http://localhost:8080/api/v1/users/re-login", {
               withCredentials: true,
             });
-            setSuccess(
-              "Click Again ! We re-login you again because token expires",
-            );
-            setInterval(() => {
-              setSuccess("");
-            }, 3000);
-          } else {
+            
+          }else {
+            toast.error(error.response.data.message, {toasterId : "getting-video-error"})
           }
         }
       } else {
-        if (!file) {
-          setLoading(false);
-          return;
+        try {
+          if (!file) {
+            setLoading(false);
+            return;
+          }
+          const formData = new FormData();
+          formData.append("video", file);
+          const res = await axios.post(
+            "http://localhost:8080/api/v1/url/upload",
+            formData,
+            { withCredentials: true },
+          );
+          setObject({"url": res.data.data.videoUrl,})
+          
+          navigate("/video-player")
+          toast.success(res.data.message, {toasterId : 'video-player'})
+        } catch (error) {
+          if (error.response.status == 401) {
+            toast.success("Click Again ! We re-login you !", {toasterId : "getting-video"})
+            const res = await axios.get("http://localhost:8080/api/v1/users/re-login", {
+              withCredentials: true,
+            });
+            
+          }else {
+            toast.error(error.response.data.message, {toasterId : "getting-video-error"})
+          }
+          toast.error(error.response.data.message, {toasterId : 'getting-video-error-login'})
+
         }
-        const formData = new FormData();
-        formData.append("video", file);
-        const res = await axios.post(
-          "http://localhost:8080/api/v1/url/upload",// Pending : Make it funtional using multer and cloudinary
-          formData,
-          { withCredentials: true },
-        );
-        setUrl(res.data.data.url);
+
       }
-    } catch (err) {
-      
-      toast.error("Please Login First !", {toasterId : "getting-video"})
-      navigate("/login");
-    } finally {
-      setLoading(false);
-    }
+    } catch (error) {
+      toast.error("error.reponse.data.message", {toasterId : "geting-video"})
+    } 
+    setLoading(false)
   };
 
   return (
     <>
-     
+     <Toaster
+                 position="top-center"
+                 reverseOrder={false}
+                 gutter={8}
+                 toasterId='getting-video'
+                 toastOptions={{
+                   className : "mt-15", 
+                   duration : 3000,
+                   removeDelay : 1000, 
+                   style :{
+                     backgroundColor: "green", 
+                     color : "white"
+                   }
+                 }}
+               />
+     <Toaster
+                 position="top-center"
+                 reverseOrder={false}
+                 gutter={8}
+                 toasterId='getting-video-error'
+                 toastOptions={{
+                   className : "mt-15", 
+                   duration : 3000,
+                   removeDelay : 1000, 
+                   style :{
+                     backgroundColor: "red", 
+                     color : "white"
+                   }
+                 }}
+               />
     <div className="h-[100vh] bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col items-center py-30 transition-colors">
-      <button
-        type="button"
-        onClick={toggleTheme}
-        className="fixed top-5 right-5 cursor-pointer bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 rounded-full px-4 py-2 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-      >
-        {isDark ? "☀️ Light" : "🌙 Dark"}
-      </button>
+      
 
       <div className="w-full md:w-xl w-sm">
         <h1 className="text-3xl font-bold text-center mb-2">Get Your Video</h1>
@@ -179,6 +219,7 @@ function GettingVedioPage() {
           </button>
         </form>
       </div>
+      
     </div>
     </>
   );
