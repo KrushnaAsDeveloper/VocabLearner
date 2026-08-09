@@ -1,12 +1,14 @@
+import { Video } from "../models/uploadViedo.model.js";
 import { Url } from "../models/youtubeLink.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { uploadFileOnCloudinary } from "../utils/cloudinary.js";
 
 export const converUrlToEmbed = asyncHandler(async (req, res) =>{
     const {url} = req.body
     if(!url){
-        throw new ApiError(404, "Url not found")
+        throw new ApiError(404, "Please enter the url")
     }
      if(!url.includes("youtu.be") && !url.includes("youtube.com") ){
         throw new ApiError(400, "Enter the valid youtube link")
@@ -46,3 +48,27 @@ export const converUrlToEmbed = asyncHandler(async (req, res) =>{
 
 })
 
+export const uploadVideo = asyncHandler(async (req, res)=>{
+    const localFilePath = req.files.video[0].path
+    if(!localFilePath){
+        throw new ApiError(501, "Error while uploading multer file, local file path not found")
+    }
+
+    const response = await uploadFileOnCloudinary(localFilePath)
+    console.log(response)
+    if(!response){
+        throw new ApiError(501, "Error while uploading on cloudinery")
+    }
+
+    const vMetaData = await Video.findOne({etag : response.etag})
+     
+    if(!vMetaData){
+        vMetaData =  await Video.create({
+        videoUrl : response.url, 
+        videoDuration : response.duration, 
+        etag : response.etag
+    }) 
+    }
+
+    res.status(200).json(new ApiResponse(200,vMetaData, "Video Uploaded Successfully !" ))    
+})
