@@ -83,7 +83,9 @@ export const logoutUser = asyncHandler(async (req, res) => {
 export const refreshAccessToken = asyncHandler(async (req, res) => {
     const refreshTokenFromCookiesAndBody =
         req.cookies?.refreshToken || req.body?.refreshToken;
-
+    if(!refreshTokenFromCookiesAndBody){
+        throw new ApiError(501, "Token expires ! Please log in ")
+    }
     const decode = jwt.verify(
         refreshTokenFromCookiesAndBody,
         process.env.REFRESH_TOKEN_SECRET
@@ -156,5 +158,10 @@ export const editUserRoute = asyncHandler(async (req, res) => {
 // to check use log in or not 
 
 export const isLoggedIn = asyncHandler(async (req, res)=>{
+    const token = req.cookies.refreshToken 
+    if(!token){ 
+        throw new ApiError(401, "User not logged in !")
+    }
     res.status(200).json(new ApiResponse(200, req.user, "User is logged in"))
+
 })

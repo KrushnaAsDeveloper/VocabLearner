@@ -13,5 +13,5 @@ router.get("/re-login", refreshAccessToken)
 // edit password 
 router.post("/edit-user-pass",verifyJWT, editUserRoute)
 // is logged in
-router.get("/isLogged", verifyJWT, isLoggedIn)
+router.get("/isLogged", isLoggedIn)
 export default router
