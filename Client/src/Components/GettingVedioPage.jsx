@@ -7,12 +7,9 @@ import { useAuthContext } from "../Context/authContext";
 function GettingVedioPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState("url");
-  const [form, setForm] = useState({ url: "" });
+  const [form, setForm] = useState({ url: "" , title  :"" });
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [isDark, setIsDark] = useState(false);
-
-  
   const handleInput = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -32,7 +29,7 @@ const {userStatus} = useAuthContext()
       if (mode === "url") {
         try {
           const res = await axios.post(
-            "http://localhost:8080/api/v1/url/convert",
+            "http://localhost:8080/api/v1/video/convert",
             form,
             { withCredentials: true },
 
@@ -63,20 +60,28 @@ const {userStatus} = useAuthContext()
         try {
           if (!file) {
             setLoading(false);
-            return;
+            
           }
           const formData = new FormData();
           formData.append("video", file);
+          formData.append("title", form.title )
           const res = await axios.post(
-            "http://localhost:8080/api/v1/url/upload",
+            "http://localhost:8080/api/v1/video/upload",
             formData,
             { withCredentials: true },
+
+            
           );
-          setObject({"url": res.data.data.videoUrl,})
-          
+          setObject({"url": res.data.data.url,"title" : res.data.data.title})
+          await localStorage.setItem("url", res.data.data.url)
           navigate("/video-player")
           toast.success(res.data.message, {toasterId : 'video-player'})
         } catch (error) {
+          if(userStatus == false){
+            toast.error("Login first !", {toasterId : 'login-first'})
+            navigate("/login")
+            return
+          }
           if (error.response.status == 401) {
             toast.success("Click Again ! We re-login you !", {toasterId : "getting-video"})
             const res = await axios.get("http://localhost:8080/api/v1/users/re-login", {
@@ -92,7 +97,7 @@ const {userStatus} = useAuthContext()
 
       }
     } catch (error) {
-      toast.error("error.reponse.data.message", {toasterId : "geting-video"})
+      toast.error(error.response.data.message, {toasterId : "geting-video"})
     } 
     setLoading(false)
   };
@@ -179,7 +184,17 @@ const {userStatus} = useAuthContext()
                          placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
           ) : (
-            <label
+            <div>
+              <input
+          type="text"
+          name="title"
+          value={form.title}
+          onChange={handleInput}
+          placeholder="Enter title for your video"
+          className="w-full mb-3 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-3 text-sm
+                     placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+        />
+              <label
               htmlFor="video-upload"
               className="flex flex-col items-center justify-center w-full border-2 border-dashed
                          border-slate-300 dark:border-slate-800 rounded-lg py-10 cursor-pointer hover:border-indigo-600 transition-colors"
@@ -208,6 +223,8 @@ const {userStatus} = useAuthContext()
                 className="hidden"
               />
             </label>
+          
+            </div>
           )}
           <button
             type="submit"
