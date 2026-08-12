@@ -7,7 +7,7 @@ import { useAuthContext } from "../Context/authContext";
 function GettingVedioPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState("url");
-  const [form, setForm] = useState({ url: "" , title  :"" });
+  const [form, setForm] = useState({ url: ""});
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const handleInput = (e) => {
@@ -29,7 +29,7 @@ const {userStatus} = useAuthContext()
       if (mode === "url") {
         try {
           const res = await axios.post(
-            "http://localhost:8080/api/v1/video/convert",
+            "http://localhost:8080/api/v1/video/youtube",
             form,
             { withCredentials: true },
 
