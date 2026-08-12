@@ -1,7 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-
 import axios from "axios";
 import HistoryPageCardForYoutube from "./HistoryPageCardForYoutube";
 import HistoryPageCardForUpload from "./HistoryPageCardForUpload";
@@ -25,24 +24,59 @@ function HistoryPage() {
   }, []);
 
   return (
-    <>
-      <h1 className="text-2xl underline text-indigo-500 font-bold text-center p-5 italic">
-        Youtube History
-      </h1>
-      <div className="flex justify-center items-center flex-wrap">
-        {youtubeHistoryData.map((obj) => (
-          <HistoryPageCardForYoutube key={obj._id} youtubeHistory={obj} />
-        ))}
+    <div className="max-w-2xl mx-auto py-8 px-4">
+      <div
+        className="
+          rounded-2xl border border-white/60 bg-white/70 backdrop-blur-xl
+          text-slate-900 shadow-[0_8px_30px_rgba(0,0,0,0.08)]
+          dark:border-white/10 dark:bg-slate-900/60 dark:text-white
+          dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)]
+          p-5 mb-10
+        "
+      >
+        <h1 className="text-xl font-bold px-1 mb-4">
+          Youtube History{" "}
+          <span className="text-sm font-normal text-slate-500 dark:text-slate-400">
+            {youtubeHistoryData.length} items
+          </span>
+        </h1>
+        <div className="flex flex-col divide-y divide-slate-200/60 dark:divide-white/10">
+          {youtubeHistoryData.map((obj, i) => (
+            <HistoryPageCardForYoutube
+              key={obj._id}
+              index={i + 1}
+              youtubeHistory={obj}
+            />
+          ))}
+        </div>
       </div>
-      <h1 className="text-2xl underline text-indigo-500 font-bold text-center p-5 italic">
-        Upload History
-      </h1>
-      <div className="flex justify-center items-center flex-wrap">
-        {uploadHistoryData.map((obj) => (
-          <HistoryPageCardForUpload key={obj._id} uploadHistory={obj} />
-        ))}
+
+      <div
+        className="
+          rounded-2xl border border-white/60 bg-white/70 backdrop-blur-xl
+          text-slate-900 shadow-[0_8px_30px_rgba(0,0,0,0.08)]
+          dark:border-white/10 dark:bg-slate-900/60 dark:text-white
+          dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)]
+          p-5
+        "
+      >
+        <h1 className="text-xl font-bold px-1 mb-4">
+          Upload History{" "}
+          <span className="text-sm font-normal text-slate-500 dark:text-slate-400">
+            {uploadHistoryData.length} items
+          </span>
+        </h1>
+        <div className="flex flex-col divide-y divide-slate-200/60 dark:divide-white/10">
+          {uploadHistoryData.map((obj, i) => (
+            <HistoryPageCardForUpload
+              key={obj._id}
+              index={i + 1}
+              uploadHistory={obj}
+            />
+          ))}
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 
