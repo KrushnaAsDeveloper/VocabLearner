@@ -63,11 +63,15 @@ export const uploadVideo = asyncHandler(async (req, res)=>{
     }
 
     const response = await uploadFileOnCloudinary(localFilePath)
-    console.log(response)
+    // console.log(response)
     if(!response){
         throw new ApiError(501, "Error while uploading on cloudinery")
     }
-
+    let videoThumbnail = await response.url.replace(".mp4", ".jpg")
+    if(!videoThumbnail){
+        return
+    }
+    console.log(videoThumbnail)
     let vMetaData = await Video.findOne({etag : response.etag, user :req.user._id })
      
     if(!vMetaData){
@@ -77,7 +81,10 @@ export const uploadVideo = asyncHandler(async (req, res)=>{
         etag : response.etag, 
         resourceType : "upload", 
         user : req.user._id, 
-        title : title
+        title : title, 
+        thumbnail : videoThumbnail
+
+        
     }) 
     }
 
