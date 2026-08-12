@@ -1,4 +1,3 @@
-// App.jsx (or your router file)
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Layout from './Components/Layout'
 import LandingPage from './Components/LandingPage'
@@ -12,7 +11,7 @@ import VideoPlyer from './Components/VideoPlayer.jsx'
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,       // parent route renders Navbar + Outlet + Footer
+    element: <Layout />,       
     children: [
       { index: true, element: <LandingPage /> },
       {path : "/fetch-video", element : <GettingVedioPage/> }, 

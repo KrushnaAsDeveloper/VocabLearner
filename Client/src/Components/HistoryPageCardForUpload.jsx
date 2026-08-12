@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Videoloader from "../assets/svg/videoloader.svg?react";
 import { useState } from "react";
 
-function HistoryPageCardForUpload({ uploadHistory }) {
+function HistoryPageCardForUpload({ uploadHistory ="" }) {
   const navigate = useNavigate();
   const [loaded, setLoaded] = useState(false);
 

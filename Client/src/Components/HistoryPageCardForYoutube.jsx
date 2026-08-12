@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Videoloader from "../assets/svg/videoloader.svg?react";
 import { useState } from "react";
 
-function HistoryPageCardForYoutube({ youtubeHistoy }) {
+function HistoryPageCardForYoutube({ youtubeHistory }) {
   const navigate = useNavigate();
   const [loaded, setLoaded] = useState(false);
 
@@ -67,7 +67,7 @@ function HistoryPageCardForYoutube({ youtubeHistoy }) {
           dark:text-white
         "
       >
-        {youtubeHistoy.title}
+        {youtubeHistory.title}
       </div>
 
       <div
@@ -95,7 +95,7 @@ function HistoryPageCardForYoutube({ youtubeHistoy }) {
             w-[30rem]
             rounded-lg
           "
-          src={youtubeHistoy.thumbnail}
+          src={youtubeHistory.thumbnail}
           alt=""
           onLoad={() => setLoaded(true)}
         />
@@ -113,7 +113,7 @@ function HistoryPageCardForYoutube({ youtubeHistoy }) {
           dark:text-slate-400
         "
       >
-        {youtubeHistoy.url}
+        {youtubeHistory.url}
       </li>
 
       <button
