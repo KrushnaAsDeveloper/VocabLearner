@@ -5,40 +5,53 @@ import DarkModeButton from './DarkModeButton'
 import axios from "axios"
 import { useAuthContext } from '../Context/authContext'
 
-import toast from 'react-hot-toast'
 function Navbar() {
-  const navigate = useNavigate()
-  const [open, setOpen] = useState(false)
-  
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Learn", path: "/fetch-video" },
     { name: "Progress", path: "/progress" },
     { name: "About", path: "/about" },
     { name: "History", path: "/history" },
-  ]
+  ];
 
   const navLinkClass = ({ isActive }) =>
     `text-sm transition-all duration-300 ${
       isActive
         ? "text-slate-900 dark:text-white border border-slate-300 dark:border-white/20 rounded-md px-2 py-1"
         : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-transparent px-2 py-1"
-    }`
-    const {userStatus, setUserStatus} = useAuthContext()
-    const logoutUser =  async()=>{
-      setUserStatus(false)
-     const res = await axios.get("http://localhost:8080/api/v1/users/logout", {withCredentials : true})
-      toast.success(res.data.message , {
-        toasterId : "loginPageForLogout"
-      })
-      navigate("/login")
-    }
+    }`;
+
+  const { userStatus, setUserStatus } = useAuthContext();
+  const reLogin = async () => {
+      await axios.get(
+        "http://localhost:8080/api/v1/users/re-login",
+        {withCredentials : true}
+      );
+      
+  };
+  const logoutUser = async () => {
+    setUserStatus(false);
+    const res = await axios.get("http://localhost:8080/api/v1/users/logout", {
+      withCredentials: true,
+    });
+
+    toast.success(res.data.message, {
+      toasterId: "loginPageForLogout",
+    });
+    navigate("/login");
+  };
 
   return (
     <nav className="bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         {/* Logo */}
-        <Link to="/" className="text-xl font-bold text-slate-900 dark:text-white">
+        <Link
+          to="/"
+          className="text-xl font-bold text-slate-900 dark:text-white"
+        >
           Vocab<span className="text-indigo-500">ly</span>
         </Link>
 
@@ -50,6 +63,7 @@ function Navbar() {
               to={link.path}
               end={link.path === "/"}
               className={navLinkClass}
+              onClick={reLogin}
             >
               {link.name}
             </NavLink>
@@ -58,36 +72,55 @@ function Navbar() {
 
         {/* Auth buttons */}
         <div className="hidden md:flex items-center gap-3">
-          
-          {userStatus ? <button onClick={logoutUser}
-            className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors px-4 py-2"
-          >
-            Log Out
-          </button> : <Link 
-            to="/login"
-            className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors px-4 py-2"
-          >
-            Log in
-          </Link> }
+          {userStatus ? (
+            <button
+              onClick={logoutUser}
+              className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors px-4 py-2"
+            >
+              Log Out
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors px-4 py-2"
+            >
+              Log in
+            </Link>
+          )}
           <Link
             to="/signup"
             className="text-sm bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg transition-colors"
           >
             Sign up
           </Link>
-            <DarkModeButton/>
-                  </div>
+          <DarkModeButton />
+        </div>
 
         {/* Mobile toggle */}
         <button
           className="md:hidden text-slate-600 dark:text-slate-300"
           onClick={() => setOpen(!open)}
         >
-          <svg className="w-6 h-6 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            className="w-6 h-6 transition-transform duration-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
             {open ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
             ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             )}
           </svg>
         </button>
@@ -111,9 +144,12 @@ function Navbar() {
               {link.name}
             </NavLink>
           ))}
-          <DarkModeButton/>
+          <DarkModeButton />
           <div className="flex flex-col gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
-            <Link to="/login" className="text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
+            <Link
+              to="/login"
+              className="text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+            >
               Log in
             </Link>
             <Link
@@ -125,9 +161,8 @@ function Navbar() {
           </div>
         </div>
       </div>
-
     </nav>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;
