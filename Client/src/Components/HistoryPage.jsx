@@ -3,15 +3,18 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 
 import axios from "axios"
-import HistoryPageCard from './HistoryPageCard'
+import HistoryPageCardForYoutube from './HistoryPageCardForYoutube'
+import HistoryPageCardForUpload from './HistoryPageCardForUpload'
 function HistoryPage() {
   
-  const [historyData, setHistoryData] = useState([])
-
+  const [youtubeHistoryData, setYoutubeHistoryData] = useState([])
+  const [uploadHistoryData, setUploadHistoryData] = useState([])
   useEffect(()=>{
     const fetchHistoryData =  async (params) => {
-      const res = await axios.get("http://localhost:8080/api/v1/history/histroy-data", {withCredentials : true})
-      setHistoryData(res.data.data)
+      const youtubeHistory = await axios.get("http://localhost:8080/api/v1/history/youtube", {withCredentials : true})
+      setYoutubeHistoryData(youtubeHistory.data.data)
+      const uploadHistory = await axios.get("http://localhost:8080/api/v1/history/upload", {withCredentials : true})
+      setUploadHistoryData(uploadHistory.data.data)
     }
     fetchHistoryData() 
 
@@ -21,10 +24,11 @@ function HistoryPage() {
   return (
     <>
    <div className='flex justify-center items-center flex-wrap'>
+
      {
-      historyData.map((obj) =>(
+      youtubeHistoryData.map((obj) =>(
         
-      <HistoryPageCard key={obj._id} historyData={obj}/>
+      <HistoryPageCardForYoutube key={obj._id} youtubeHistoy={obj}/>
       ))
     }
    </div>
