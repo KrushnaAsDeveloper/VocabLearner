@@ -12,7 +12,7 @@ function Navbar() {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Learn", path: "/fetch-video" },
-    { name: "Progress", path: "/progress" },
+    { name: "Dashboard", path: "/dashboard" },
     { name: "About", path: "/about" },
     { name: "History", path: "/history" },
   ];
