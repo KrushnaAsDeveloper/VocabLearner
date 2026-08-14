@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Layout from './Components/Layout'
 import LandingPage from './Components/LandingPage'
 import GettingVedioPage from "./Components/GettingVedioPage.jsx"
-import ProgressPage from './Components/ProgressPage.jsx'
+import Dashboard from './Components/Dashboard.jsx'
 import AboutPage from './Components/AboutPage.jsx'
 import HistoryPage from './Components/HistoryPage.jsx'
 import Login from './Components/Login.jsx'
@@ -15,7 +15,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <LandingPage /> },
       {path : "/fetch-video", element : <GettingVedioPage/> }, 
-      {path : "/progress", element :<ProgressPage/>},
+      {path : "/dashboard", element :<Dashboard/>},
       {path : "/about", element :<AboutPage/>}, 
       {path : "/history", element :<HistoryPage/>}, 
       {path : "/login", element: <Login/>}, 
