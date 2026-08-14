@@ -7,14 +7,14 @@ import { useAuthContext } from '../Context/authContext'
 
 function Navbar() {
   const navigate = useNavigate();
+  const { userStatus, setUserStatus } = useAuthContext();
   const [open, setOpen] = useState(false);
-
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Learn", path: "/fetch-video" },
     { name: "Dashboard", path: "/dashboard" },
+    { name: "History", path: "/history" }, 
     { name: "About", path: "/about" },
-    { name: "History", path: "/history" },
   ];
 
   const navLinkClass = ({ isActive }) =>
@@ -24,7 +24,6 @@ function Navbar() {
         : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-transparent px-2 py-1"
     }`;
 
-  const { userStatus, setUserStatus } = useAuthContext();
   const reLogin = async () => {
       await axios.get(
         "http://localhost:8080/api/v1/users/re-login",
@@ -65,7 +64,9 @@ function Navbar() {
               className={navLinkClass}
               onClick={reLogin}
             >
-              {link.name}
+              {
+                link.name
+              }
             </NavLink>
           ))}
         </div>
