@@ -10,6 +10,8 @@ function HistoryPageCardForYoutube({ youtubeHistory, index }) {
   const navigateToLearn = () => {
     navigate("/video-player");
   };
+   let date =new Date(youtubeHistory.createdAt).toLocaleDateString("en-IN" ,{timeZone : "Asia/Kolkata"})
+  let time = new Date(youtubeHistory.createdAt).toLocaleTimeString("en-IN", {timeZone : "Asia/Kolkata", timeStyle : "short", hour12 : true})
 
   return (
     <div
@@ -47,7 +49,7 @@ function HistoryPageCardForYoutube({ youtubeHistory, index }) {
           {youtubeHistory.title}
         </p>
         <p className="mt-1 truncate text-xs text-slate-500 dark:text-slate-400">
-          {youtubeHistory.url}
+          {`${date} | ${time}`}
         </p>
       </div>
 

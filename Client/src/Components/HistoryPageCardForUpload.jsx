@@ -10,7 +10,8 @@ function HistoryPageCardForUpload({ uploadHistory = "", index }) {
   const navigateToLearn = () => {
     navigate("/video-player");
   };
-
+  let date =new Date(uploadHistory.createdAt).toLocaleDateString("en-IN" ,{timeZone : "Asia/Kolkata"})
+  let time = new Date(uploadHistory.createdAt).toLocaleTimeString("en-IN", {timeZone : "Asia/Kolkata", timeStyle : "short", hour12 : true})
   return (
     <div
       onClick={navigateToLearn}
@@ -47,7 +48,7 @@ function HistoryPageCardForUpload({ uploadHistory = "", index }) {
           {uploadHistory.title}
         </p>
         <p className="mt-1 truncate text-xs text-slate-500 dark:text-slate-400">
-          {uploadHistory.url}
+          {`${date} | ${time}`}
         </p>
       </div>
 
