@@ -20,8 +20,6 @@ app.use(express.static("public"))
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/video", urlRoute)
 app.use("/api/v1/history", historyRoute)
-// const transcript = await YoutubeTranscript.fetchTranscript('n3Z4vVzx4nw');
-// console.log(transcript);
 
 app.use((err, req, res, next)=>{
   const statusCode = err.statusCode || 500
