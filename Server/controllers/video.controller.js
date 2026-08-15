@@ -3,7 +3,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadFileOnCloudinary } from "../utils/cloudinary.js";
-
+import {fetchTranscript} from "youtube-transcript"
+import { Transcript } from "../models/transcript.model.js";
 export const converUrlToEmbed = asyncHandler(async (req, res) =>{
     const {url} = req.body
     if(!url){
@@ -29,17 +30,34 @@ export const converUrlToEmbed = asyncHandler(async (req, res) =>{
     }
 
     if (!videoId) throw new ApiError(404, "invalid youtube url || url controller")
-    
-    let existed = await Video.findOne({VideoId : videoId, user : req.user._id});
-    if(existed === null){
-
-        existed = await Video.create({
-            url : url,
-            user : req.user._id, 
-            resourceType : "url"
-        })
-    }
-    
+        
+        
+        let existed = await Video.findOne({VideoId : videoId, user : req.user._id});
+        if(existed === null){
+            
+            existed = await Video.create({
+                url : url,
+                user : req.user._id, 
+                resourceType : "url"
+            })
+        }
+         const transcript = await fetchTranscript(videoId)
+            const store =  transcript.map((elem, idx) =>(
+                    {segmentId : idx, 
+                    start : elem.offset / 1000, 
+                    end : (elem.duration + elem.offset) / 1000, 
+                    text : elem.text, 
+                    resourceType : "youtube",
+                    video : existed._id, 
+                    videoId : videoId
+                    } 
+            ))
+        const transExisted = await Transcript.findOne({videoId : videoId})
+        console.log(transExisted)
+        if (transExisted === null) {
+                 await Transcript.insertMany(store, {ordered : true})
+            }
+        
 
     res.status(201).json(new ApiResponse(201, existed , "Url converted successfully"))
 
