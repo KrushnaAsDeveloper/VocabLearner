@@ -35,7 +35,7 @@ const TranscriptSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId , 
         ref : "Video"
     }
-} , {timestaps : true} )
+} , {timestamps : true} )
 
 
 export const Transcript = mongoose.model("Transcript", TranscriptSchema)
