@@ -2,6 +2,8 @@ import { faGlobe, faClock, faListCheck } from "@fortawesome/free-solid-svg-icons
 import { faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {Link} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../Context/authContext";
 const steps = [
   {
     title: "Paste a link or upload a file",
@@ -36,6 +38,16 @@ const features = [
 ];
 
 function AboutPage() {
+  const navigate = useNavigate()
+  const {userStatus} = useAuthContext()
+
+  function navigateToPage() {
+    if (userStatus) {
+      navigate("/fetch-video")
+    }else{
+      navigate("/login")
+    }
+  }
   return (
     <div className="min-h-screen bg-white dark:bg-[#010617] text-slate-900 dark:text-white">
 
@@ -93,12 +105,12 @@ function AboutPage() {
           Language learners, students prepping for exams, and anyone who picks up
           new words faster from real content than from word lists.
         </p>
-        <Link
-          to="/signup"
+        <button
+          onClick={navigateToPage}
           className="inline-block mt-6 bg-indigo-500 hover:bg-indigo-400 transition px-6 py-2.5 rounded-lg font-medium text-white"
         >
           Get started
-        </Link>
+        </button>
       </section>
     </div>
   );
