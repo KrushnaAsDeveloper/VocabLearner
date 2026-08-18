@@ -33,7 +33,8 @@ const videoSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId, 
         ref : "User", 
         required :true
-    }
+    }, 
+
 
 }, {timestamps : true})
 
@@ -65,8 +66,13 @@ videoSchema.pre("validate", async function getYouTubeEmbedUrl() {
 
     const res = await axios.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${process.env.YOUTUBE_API_KEY_V3}`) 
 
+    if (!res.data.items || res.data.items.length === 0) {
+        throw new ApiError(404, "Video on found on youtube")
+    }
     this.title = res.data.items[0].snippet.title
-    this.thumbnail = res.data.items[0].snippet.thumbnails.maxres.url
+    this.thumbnail = res.data.items[0].snippet.thumbnails.maxres?.url 
+    || res.data.items[0].snippet.thumbnails.high?.url 
+    || res.data.items[0].snippet.thumbnails.default?.url
     this.VideoId = videoId
     this.url = `https://www.youtube.com/embed/${videoId}`;
     return
