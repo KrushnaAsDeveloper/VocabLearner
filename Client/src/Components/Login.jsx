@@ -36,7 +36,6 @@ function Login() {
         toasterId : "afterLogin"
       })
     } catch (error) {
-      console.log(error)
       toast.error(error.response.data.message, {toasterId : "wrongPass"})
       setLoading(false);
       return
