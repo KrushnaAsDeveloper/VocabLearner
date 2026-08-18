@@ -21,20 +21,12 @@ const TranscriptSchema = new mongoose.Schema({
     sourceType : {
         type : String, 
         enum : ["youtube", "whisper"]
-    },
-    user : {
-        type : mongoose.Schema.Types.ObjectId, 
-        ref : "user"
     }, 
      
     videoId : {
         type : String, 
         required : true 
     }, 
-    video : {
-        type : mongoose.Schema.Types.ObjectId , 
-        ref : "Video"
-    }
 } , {timestamps : true} )
 
 
