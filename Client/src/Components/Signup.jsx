@@ -40,7 +40,7 @@ function Signup() {
   }
   return (
     <div className=" bg-white dark:bg-[#010617]">
-      <div  className='h-screen flex justify-center items-center flex-col'>
+      <div  className='h-screen flex  pt-30 items-center flex-col'>
         <div className='text-center text-amber-600 dark:text-[#FDC700]  text-4xl font-bold my-4'>Sign Up</div>
       <form
         onSubmit={handleOnsubmit}
