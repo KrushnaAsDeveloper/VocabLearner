@@ -8,10 +8,14 @@ function GettingVedioPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState("url");
   const [form, setForm] = useState({ url: ""});
+  const [title, setTitle ] = useState({title : ""})
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const handleInput = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+  const handleInputTitle = (e) => {
+    setTitle({ ...title, [e.target.name]: e.target.value });
   };
 
   // video context
@@ -64,7 +68,7 @@ const {userStatus} = useAuthContext()
           }
           const formData = new FormData();
           formData.append("video", file);
-          formData.append("title", form.title )
+          formData.append("title", title.title )
           const res = await axios.post(
             "http://localhost:8080/api/v1/video/upload",
             formData,
@@ -188,8 +192,8 @@ const {userStatus} = useAuthContext()
               <input
           type="text"
           name="title"
-          value={form.title}
-          onChange={handleInput}
+          value={title.title}
+          onChange={handleInputTitle}
           placeholder="Enter title for your video"
           className="w-full mb-3 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg px-4 py-3 text-sm
                      placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-600"
