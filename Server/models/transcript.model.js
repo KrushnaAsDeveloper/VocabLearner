@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 const TranscriptSchema = new mongoose.Schema({
     segmentId : {
-        type : String, 
+        type : Number, 
         required : true
     }, 
     text : {
