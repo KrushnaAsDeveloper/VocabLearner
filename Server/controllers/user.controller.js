@@ -84,7 +84,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     const refreshTokenFromCookiesAndBody =
         req.cookies?.refreshToken || req.body?.refreshToken;
     if(!refreshTokenFromCookiesAndBody){
-        throw new ApiError(501, "Token expires ! Please log in ")
+        throw new ApiError(401, "Token expires ! Please log in ")
     }
     const decode = jwt.verify(
         refreshTokenFromCookiesAndBody,
@@ -92,7 +92,9 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     );
 
     const user = await User.findById(decode._id);
-
+    if(!user){
+        throw new ApiError(401, "User for found !")
+    }
     if (refreshTokenFromCookiesAndBody !== user.refreshToken) {
         throw new ApiError(401, "Refresh token expires !");
     }
