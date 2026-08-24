@@ -64,7 +64,7 @@ const {userStatus} = useAuthContext()
         try {
           if (!file) {
             setLoading(false);
-            
+            return 
           }
           const formData = new FormData();
           formData.append("video", file);
@@ -95,7 +95,6 @@ const {userStatus} = useAuthContext()
           }else {
             toast.error(error.response.data.message, {toasterId : "getting-video-error"})
           }
-          toast.error(error.response.data.message, {toasterId : 'getting-video-error-login'})
 
         }
 
