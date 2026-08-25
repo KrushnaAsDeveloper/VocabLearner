@@ -4,7 +4,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import DarkModeButton from './DarkModeButton'
 import axios from "axios"
 import { useAuthContext } from '../Context/authContext'
-
+import owl from "../assets/mascot/owl-mascot-transparent.png"
 function Navbar() {
   const navigate = useNavigate();
   const { userStatus, setUserStatus } = useAuthContext();
@@ -45,12 +45,14 @@ function Navbar() {
 
   return (
     <nav className="bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 transition-all duration-300">
+
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         {/* Logo */}
         <Link
           to="/"
-          className="text-xl font-bold text-slate-900 dark:text-white"
+          className="text-xl font-bold flex justify-center items-center text-slate-900 dark:text-white"
         >
+          <img className='w-10 mx-2' src={owl} alt="" />
           Vocab<span className="text-indigo-500">ly</span>
         </Link>
 
