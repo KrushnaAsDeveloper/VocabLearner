@@ -22,7 +22,7 @@ function Signup() {
     try {
       e.preventDefault()
       setLoading(true)
-      const res = await axios.post("http://localhost:8080/api/v1/users/register", signUp, {withCredentials:true})
+      const res = await axios.post("https://vocablearner.onrender.com/api/v1/users/register", signUp, {withCredentials:true})
       toast.success(res.data.message, {
         toasterId : "loginPageForSignup"
       })

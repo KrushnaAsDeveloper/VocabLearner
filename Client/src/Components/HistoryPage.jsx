@@ -15,12 +15,12 @@ function HistoryPage() {
   useEffect(() => {
     const fetchHistoryData = async (params) => {
       const youtubeHistory = await axios.get(
-        "http://localhost:8080/api/v1/history/youtube",
+        "https://vocablearner.onrender.com/api/v1/history/youtube",
         { withCredentials: true },
       );
       setYoutubeHistoryData(youtubeHistory.data.data);
       const uploadHistory = await axios.get(
-        "http://localhost:8080/api/v1/history/upload",  
+        "https://vocablearner.onrender.com/api/v1/history/upload",  
         { withCredentials: true },
       );
       setUploadHistoryData(uploadHistory.data.data);

@@ -26,14 +26,14 @@ function Navbar() {
 
   const reLogin = async () => {
       await axios.get(
-        "http://localhost:8080/api/v1/users/re-login",
+        "https://vocablearner.onrender.com/api/v1/users/re-login",
         {withCredentials : true}
       );
       
   };
   const logoutUser = async () => {
     setUserStatus(false);
-    const res = await axios.get("http://localhost:8080/api/v1/users/logout", {
+    const res = await axios.get("https://vocablearner.onrender.com/api/v1/users/logout", {
       withCredentials: true,
     });
 
