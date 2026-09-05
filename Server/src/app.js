@@ -9,7 +9,7 @@ import {YoutubeTranscript} from 'youtube-transcript'
 const app = express();
 
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+   origin :  process.env.CLIENT_URL_LOCAL, 
   credentials: true, 
 }));
 app.use(cookieParser());
