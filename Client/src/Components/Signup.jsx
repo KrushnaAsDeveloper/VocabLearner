@@ -1,3 +1,4 @@
+const API_URL = import.meta.env.VITE_API_URL;
 import React, { useState } from 'react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faL, faTextWidth } from "@fortawesome/free-solid-svg-icons";
@@ -22,7 +23,7 @@ function Signup() {
     try {
       e.preventDefault()
       setLoading(true)
-      const res = await axios.post("https://vocablearner.onrender.com/api/v1/users/register", signUp, {withCredentials:true})
+      const res = await axios.post(`${API_URL}/api/v1/users/register`, signUp, {withCredentials:true})
       toast.success(res.data.message, {
         toasterId : "loginPageForSignup"
       })

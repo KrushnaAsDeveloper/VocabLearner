@@ -1,3 +1,4 @@
+const API_URL = import.meta.env.VITE_API_URL;
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios"
 export const AuthContextUser = createContext()
@@ -6,7 +7,7 @@ export function AuthContextProvider({children}) {
     const [userStatus, setUserStatus] = useState(false);
     useEffect(()=>{
         const checkUserStatus = async ()=>{
-            const res = await axios.get("https://vocablearner.onrender.com/api/v1/users/isLogged", {withCredentials : true})
+            const res = await axios.get(`${API_URL}/api/v1/users/isLogged`, {withCredentials : true})
             console.log(res.data.success)
             if(res.data.success == true){
                 setUserStatus(true)

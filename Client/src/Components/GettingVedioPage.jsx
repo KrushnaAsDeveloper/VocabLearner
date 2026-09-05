@@ -1,3 +1,4 @@
+const API_URL = import.meta.env.VITE_API_URL;
 import React, { useState } from "react";
 import axios from "axios";
 import { useVideo } from "../Context/VideoContext";
@@ -33,7 +34,7 @@ const {userStatus} = useAuthContext()
       if (mode === "url") {
         try {
           const res = await axios.post(
-            "https://vocablearner.onrender.com/api/v1/video/youtube",
+            `${API_URL}/api/v1/video/youtube`,
             form,
             { withCredentials: true },
 
@@ -52,7 +53,7 @@ const {userStatus} = useAuthContext()
           }
           if (error.response.status == 401) {
             toast.success("Click Again ! We re-login you !", {toasterId : "getting-video"})
-            const res = await axios.get("https://vocablearner.onrender.com/api/v1/users/re-login", {
+            const res = await axios.get(`${API_URL}/api/v1/users/re-login`, {
               withCredentials: true,
             });
             
@@ -70,7 +71,7 @@ const {userStatus} = useAuthContext()
           formData.append("video", file);
           formData.append("title", title.title )
           const res = await axios.post(
-            "https://vocablearner.onrender.com/api/v1/video/upload",
+            `${API_URL}/api/v1/video/upload`,
             formData,
             { withCredentials: true },
 
@@ -88,7 +89,7 @@ const {userStatus} = useAuthContext()
           }
           if (error.response.status == 401) {
             toast.success("Click Again ! We re-login you !", {toasterId : "getting-video"})
-            const res = await axios.get("https://vocablearner.onrender.com/api/v1/users/re-login", {
+            const res = await axios.get(`${API_URL}/api/v1/users/re-login`, {
               withCredentials: true,
             });
             

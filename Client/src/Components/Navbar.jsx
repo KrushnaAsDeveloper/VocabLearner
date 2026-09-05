@@ -1,4 +1,5 @@
 // Navbar.jsx
+const API_URL = import.meta.env.VITE_API_URL;
 import React, { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import DarkModeButton from './DarkModeButton'
@@ -26,14 +27,14 @@ function Navbar() {
 
   const reLogin = async () => {
       await axios.get(
-        "https://vocablearner.onrender.com/api/v1/users/re-login",
+        `${API_URL}/api/v1/users/re-login`,
         {withCredentials : true}
       );
       
   };
   const logoutUser = async () => {
     setUserStatus(false);
-    const res = await axios.get("https://vocablearner.onrender.com/api/v1/users/logout", {
+    const res = await axios.get(`${API_URL}/api/v1/users/logout`, {
       withCredentials: true,
     });
 

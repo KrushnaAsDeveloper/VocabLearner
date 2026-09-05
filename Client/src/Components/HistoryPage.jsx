@@ -1,3 +1,4 @@
+const API_URL = import.meta.env.VITE_API_URL;
 import React from "react";
 import { useEffect, useRef } from "react";
 import { useState } from "react";
@@ -15,12 +16,12 @@ function HistoryPage() {
   useEffect(() => {
     const fetchHistoryData = async (params) => {
       const youtubeHistory = await axios.get(
-        "https://vocablearner.onrender.com/api/v1/history/youtube",
+        `${API_URL}/api/v1/history/youtube`,
         { withCredentials: true },
       );
       setYoutubeHistoryData(youtubeHistory.data.data);
       const uploadHistory = await axios.get(
-        "https://vocablearner.onrender.com/api/v1/history/upload",  
+        `${API_URL}/api/v1/history/upload`,  
         { withCredentials: true },
       );
       setUploadHistoryData(uploadHistory.data.data);
