@@ -6,6 +6,8 @@ import axios from "axios";
 import gsap from "gsap";
 import HistoryPageCardForYoutube from "./HistoryPageCardForYoutube";
 import HistoryPageCardForUpload from "./HistoryPageCardForUpload";
+import { toast, Toaster } from "react-hot-toast";
+
 
 function HistoryPage() {
   const [youtubeHistoryData, setYoutubeHistoryData] = useState([]);
@@ -55,8 +57,37 @@ function HistoryPage() {
     }
   }, [uploadHistoryData]);
 
+
+  const handleDeleteForYoutube = async (id) =>{
+    const res = axios.delete(`${API_URL}/api/v1/history/delete-history/${id}`, )
+    toast.success("Deleted Succesfully", {toasterId : "history-del"})
+    setYoutubeHistoryData(prev => prev.filter(item => item._id != id))
+  }
+  const handleDeleteForUpload = async (id) =>{
+    const res = axios.delete(`${API_URL}/api/v1/history/delete-history/${id}`, )
+    toast.success("Deleted Succesfully", {toasterId : "history-del"})
+    setUploadHistoryData(prev => prev.filter(item => item._id != id))
+  }
   return (
+    <>
+    <Toaster
+                 position="top-center"
+                 reverseOrder={false}
+                 gutter={8}
+                 toasterId='history-del'
+                 toastOptions={{
+                   className : "mt-15", 
+                   duration : 3000,
+                   removeDelay : 1000, 
+                   style :{
+                     backgroundColor: "green", 
+                     color : "white"
+                   }
+                 }}
+               />
+   
     <div className="max-w-5xl mx-auto py-8 px-4">
+      
       <div
         className="
           rounded-2xl border border-white/60 bg-white/70 backdrop-blur-xl
@@ -78,8 +109,10 @@ function HistoryPage() {
               key={obj._id}
               index={i + 1}
               youtubeHistory={obj}
+              onDelete={handleDeleteForYoutube}
             />
           ))}
+          
         </div>
       </div>
 
@@ -104,11 +137,13 @@ function HistoryPage() {
               key={obj._id}
               index={i + 1}
               uploadHistory={obj}
+              onDelete={handleDeleteForUpload}
             />
           ))}
         </div>
       </div>
     </div>
+     </>
   );
 }
 

@@ -3,22 +3,30 @@ import { useNavigate } from "react-router-dom";
 import Videoloader from "../assets/svg/videoloader.svg?react";
 import { useState } from "react";
 import gsap from "gsap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
-function HistoryPageCardForUpload({ uploadHistory = "", index }) {
+function HistoryPageCardForUpload({ uploadHistory = "", index, onDelete }) {
   const navigate = useNavigate();
   const [loaded, setLoaded] = useState(false);
   const cardRef = useRef(null);
-  const dotRef = useRef(null);
+  const deleteRef = useRef(null);
 
   const navigateToLearn = () => {
     navigate("/video-player");
   };
+
+  const handleDelete = (e) => {
+    e.stopPropagation(); // prevent card's onClick from firing
+    onDelete?.(uploadHistory._id);
+  };
+
   let date = new Date(uploadHistory.createdAt).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })
   let time = new Date(uploadHistory.createdAt).toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", timeStyle: "short", hour12: true })
 
   useEffect(() => {
     const card = cardRef.current;
-    const dot = dotRef.current;
+    const deleteBtn = deleteRef.current;
     if (!card) return;
 
     const tl = gsap.timeline({ paused: true });
@@ -27,9 +35,9 @@ function HistoryPageCardForUpload({ uploadHistory = "", index }) {
       x: 4,
       duration: 0.2,
       ease: "power2.out",
-    }, 0).to(dot, {
+    }, 0).to(deleteBtn, {
       opacity: 1,
-      scale: 1.3,
+      scale: 1,
       duration: 0.2,
       ease: "back.out(2)",
     }, 0);
@@ -52,6 +60,7 @@ function HistoryPageCardForUpload({ uploadHistory = "", index }) {
         history-card
         group flex items-center gap-4
         px-2 py-3 rounded-xl cursor-pointer
+        my-2
         dark:hover:bg-white/5
       "
     >
@@ -85,14 +94,18 @@ function HistoryPageCardForUpload({ uploadHistory = "", index }) {
         </p>
       </div>
 
-      <span
-        ref={dotRef}
+      <button
+        ref={deleteRef}
+        onClick={handleDelete}
         className="
-          shrink-0 h-2 w-2 rounded-full
-          bg-gradient-to-b from-[#6a5cf8] to-[#4F39F6]
-          opacity-0
+          shrink-0 h-10 w-10 flex items-center justify-center rounded-full
+          text-slate-700 hover:text-red-500 hover:bg-red-500/10
+          opacity-0 scale-90 transition-colors
         "
-      />
+        aria-label="Delete"
+      >
+        <FontAwesomeIcon icon={faTrash} className="text-lg cursor-pointer" />
+      </button>
     </div>
   );
 }
