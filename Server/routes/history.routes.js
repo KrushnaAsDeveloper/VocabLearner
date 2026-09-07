@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { histroyData, uploadData } from "../controllers/history.controller.js";
+import { histroyData, uploadData, deleteHistory } from "../controllers/history.controller.js";
 import { verifyJWT } from "../middlewares/verifyJWT.middleware.js";
 
 const router = Router();
@@ -7,6 +7,5 @@ const router = Router();
 
 router.get('/youtube',verifyJWT,  histroyData )
 router.get('/upload',verifyJWT,  uploadData )
-
-
+router.delete('/delete-history/:id', deleteHistory)
 export default router
