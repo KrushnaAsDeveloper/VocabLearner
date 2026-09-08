@@ -14,6 +14,16 @@ export const histroyData = asyncHandler(async (req, res)=>{
     res.status(200).json(new ApiResponse(200, user, "History data of youtube url's are fetched sucessfully !"))
 
 })
+export const fetchVideo =  asyncHandler(async(req, res)=>{
+    const videoId = req.paramse
+    const videos = await Video.find({ VideoId : videoId})
+
+    if(!videos){
+        throw new ApiError(404, "Video not found")
+    }
+
+    res.status(200).json(new ApiResponse(200, videos, "Video fetched !"))
+})
 export const uploadData = asyncHandler(async (req, res)=>{
     if (!req.user) {
         throw new ApiError(401, "Unauthorize User")
@@ -24,7 +34,6 @@ export const uploadData = asyncHandler(async (req, res)=>{
     res.status(200).json(new ApiResponse(200, user, "History data of uploaded videos are fetched successfully !"))
 
 })
-
 
 export const deleteHistory = asyncHandler(async (req, res)=>{
     const {id} = req.params
