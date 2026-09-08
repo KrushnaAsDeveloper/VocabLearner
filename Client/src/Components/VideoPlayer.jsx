@@ -42,7 +42,6 @@ function VideoPlyer() {
                 height="315"
                 src={object.url}
                 onLoad={() => setLoaded(true)}
-                frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 title="video-player"
@@ -54,7 +53,7 @@ function VideoPlyer() {
               width="100%"
               height="315"
               src={curretUrl ? curretUrl : null}
-              frameBorder="0"
+              
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               title="video-player"
