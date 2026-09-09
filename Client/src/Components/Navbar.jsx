@@ -1,12 +1,10 @@
 // Navbar.jsx
 
 const API_URL = import.meta.env.VITE_API_URL;
-
-import React, { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Link, Links, NavLink, useNavigate } from "react-router-dom";
 import DarkModeButton from "./DarkModeButton";
 import axios from "axios";
-
 import { useAuthContext } from "../Context/authContext";
 import owl from "../assets/mascot/owl-mascot-transparent.png";
 import gsap from "gsap";
@@ -90,7 +88,7 @@ function Navbar() {
           duration: 0.25,
           stagger: 0.05,
           ease: "power2.out",
-        }
+        },
       );
     } else {
       gsap.to(mobileMenuRef.current, {
@@ -229,11 +227,7 @@ function Navbar() {
     transition-colors
     duration-300
 
-    ${
-      isActive
-        ? "text-white"
-        : "text-slate-400 hover:text-slate-100"
-    }
+    ${isActive ? "text-white" : "text-slate-400 hover:text-slate-100"}
 
     after:absolute
     after:left-1/2
@@ -319,7 +313,6 @@ function Navbar() {
             justify-between
           "
         >
-
           {/* =================================================
               LOGO
           ================================================= */}
@@ -397,7 +390,7 @@ function Navbar() {
                 gap-1
               "
             >
-              {navLinks.map((link) => (
+              {userStatus ? navLinks.map((link) => (
                 <NavLink
                   key={link.name}
                   to={link.path}
@@ -408,8 +401,8 @@ function Navbar() {
                   onMouseLeave={handleLinkLeave}
                 >
                   {link.name}
-                </NavLink>
-              ))}
+                </NavLink> 
+              )) : navLinks.filter(elem => elem.name !== "History" && elem.name !== "Dashboard").map((link)=>(<NavLink key={link.name} to={link.path} end={link.path === "/"} className={navLinkClass}>{link.name}</NavLink>))}
             </div>
           </div>
 
@@ -618,7 +611,6 @@ function Navbar() {
             py-4
           "
         >
-
           {/* Links */}
 
           <div className="flex flex-col gap-1">
@@ -776,4 +768,3 @@ function Navbar() {
 }
 
 export default Navbar;
-
