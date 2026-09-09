@@ -223,10 +223,10 @@ function Navbar() {
     text-[14px]
     font-medium
     tracking-wide
-
     transition-colors
-    duration-300
 
+    duration-300
+    
     ${isActive ? "text-white" : "text-slate-400 hover:text-slate-100"}
 
     after:absolute
@@ -307,6 +307,7 @@ function Navbar() {
         <div
           className="
             h-[68px]
+
 
             flex
             items-center
@@ -614,7 +615,7 @@ function Navbar() {
           {/* Links */}
 
           <div className="flex flex-col gap-1">
-            {navLinks.map((link) => (
+            {userStatus ? navLinks.map((link) => (
               <NavLink
                 key={link.name}
                 to={link.path}
@@ -646,7 +647,28 @@ function Navbar() {
               >
                 {link.name}
               </NavLink>
-            ))}
+            )) : navLinks.filter(link => link.name !== "History" && link.name !== "Dashboard").map(elem =>(<NavLink key={elem.name}
+                to={elem.path}
+                end={elem.path === "/"}   className={({ isActive }) => `
+                  mobile-link
+
+                  px-4
+                  py-3
+
+                  rounded-lg
+
+                  text-[14px]
+                  font-medium
+
+                  transition-all
+                  duration-300
+
+                  ${
+                    isActive
+                      ? "text-white bg-violet-500/10 border border-violet-400/10"
+                      : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
+                  }
+                `} onClick={()=>{ setOpen(false)}}>{elem.name}</NavLink>))}
           </div>
 
           {/* Mobile bottom */}
