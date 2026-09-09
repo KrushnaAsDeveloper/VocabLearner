@@ -1,170 +1,970 @@
 const API_URL = import.meta.env.VITE_API_URL;
-import React, { useState } from "react";
+
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faL } from "@fortawesome/free-solid-svg-icons";
-import { replace, useNavigate } from "react-router-dom";
+import {
+  faEye,
+  faEyeSlash,
+  faArrowRight,
+  faLock,
+  faEnvelope,
+} from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+
 import DotSpinner from "../assets/svg/dot.svg?react";
 import { useAuthContext } from "../Context/authContext";
-import toast , {Toaster} from "react-hot-toast"
+
+import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import gsap from "gsap";
+
 function Login() {
-  
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+
   const { setUserStatus } = useAuthContext();
+
+  const pageRef = useRef(null);
+  const cardRef = useRef(null);
+  const owlGlowRef = useRef(null);
+
   const [error, SetError] = useState("");
+
   const [login, setSignUp] = useState({
     email: "",
     password: "",
   });
+
   const [types, SetTypes] = useState("password");
   const [loading, setLoading] = useState(false);
+
+  // =========================================================
+  // GSAP INTRO
+  // =========================================================
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        defaults: {
+          ease: "power3.out",
+        },
+      });
+
+      tl.from(".login-logo", {
+        y: -20,
+        opacity: 0,
+        duration: 0.6,
+      })
+        .from(
+          ".login-title",
+          {
+            y: 25,
+            opacity: 0,
+            duration: 0.65,
+          },
+          "-=0.3"
+        )
+        .from(
+          ".login-subtitle",
+          {
+            y: 15,
+            opacity: 0,
+            duration: 0.5,
+          },
+          "-=0.35"
+        )
+        .from(
+          cardRef.current,
+          {
+            y: 40,
+            opacity: 0,
+            scale: 0.97,
+            duration: 0.8,
+          },
+          "-=0.25"
+        )
+        .from(
+          ".login-field",
+          {
+            y: 15,
+            opacity: 0,
+            duration: 0.45,
+            stagger: 0.1,
+          },
+          "-=0.4"
+        )
+        .from(
+          ".login-submit",
+          {
+            y: 15,
+            opacity: 0,
+            duration: 0.45,
+          },
+          "-=0.25"
+        ).set(
+    [".login-logo", ".login-title", ".login-subtitle", cardRef.current, ".login-field", ".login-submit"],
+    { clearProps: "opacity,transform" }
+  );
+
+      // Floating glow
+      gsap.to(owlGlowRef.current, {
+        y: -20,
+        x: 10,
+        duration: 4,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+    }, pageRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // =========================================================
+  // INPUT
+  // =========================================================
+
   const handleInput = (e) => {
-    setSignUp((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setSignUp((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+
+    if (error) {
+      SetError("");
+    }
   };
+
+  // =========================================================
+  // LOGIN
+  // =========================================================
+
   const handleOnsubmit = async (e) => {
     try {
       e.preventDefault();
+
       setLoading(true);
+
       const res = await axios.post(
         `${API_URL}/api/v1/users/login`,
         login,
-        { withCredentials: true },
-
+        { withCredentials: true }
       );
+
       toast.success(res.data.message, {
-        duration : 3000, 
-        removeDelay : 1000, 
-        toasterId : "afterLogin"
-      })
+        duration: 3000,
+        removeDelay: 1000,
+        toasterId: "afterLogin",
+      });
     } catch (error) {
-      toast.error(error.response.data.message, {toasterId : "wrongPass"})
+      toast.error(
+        error?.response?.data?.message || "Login failed",
+        {
+          toasterId: "wrongPass",
+        }
+      );
+
       setLoading(false);
-      return
-    } 
-    
+
+      return;
+    }
+
     setUserStatus(true);
-    navigate("/", { replace: true });
-    
+
+    navigate("/", {
+      replace: true,
+    });
   };
+
+  // =========================================================
+  // BUTTON HOVER
+  // =========================================================
+
+  const handleButtonEnter = (e) => {
+    if (loading) return;
+
+    gsap.to(e.currentTarget, {
+      y: -2,
+      scale: 1.01,
+      duration: 0.25,
+      ease: "power2.out",
+    });
+  };
+
+  const handleButtonLeave = (e) => {
+    gsap.to(e.currentTarget, {
+      y: 0,
+      scale: 1,
+      duration: 0.25,
+      ease: "power2.out",
+    });
+  };
+
+  // =========================================================
+  // PAGE
+  // =========================================================
+
   return (
-    <div className="bg-white dark:bg-[#010617]">
-       <Toaster
-                  position="top-center"
-                  reverseOrder={false}
-                  gutter={8}
-                  toasterId="loginPageForLogout"
-                  toastOptions={{
-                    className : "mt-15", 
-                    duration : 3000,
-                    removeDelay : 1000, 
-                    style :{
-                      backgroundColor: "green", 
-                      color : "white"
-                    }
-                  }}
-                />
-       <Toaster
-                  position="top-center"
-                  reverseOrder={false}
-                  gutter={8}
-                  toasterId="loginPageForSignup"
-                  toastOptions={{
-                    className : "mt-15", 
-                    duration : 3000,
-                    removeDelay : 1000, 
-                    style :{
-                      backgroundColor: "green", 
-                      color : "white"
-                    }
-                  }}
-                />
-                <Toaster
-            position="top-center"
-            reverseOrder={false}
-            gutter={8}
-            toasterId="login-first"
-            toastOptions={{
-              className : "mt-15", 
-              duration : 3000,
-              removeDelay : 1000, 
-              style :{
-                backgroundColor: "red", 
-                color : "white"
-              }
-            }}
-          />
-          <Toaster
-            position="top-center"
-            reverseOrder={false}
-            gutter={8}
-            toasterId="wrongPass"
-            toastOptions={{
-              className : "", 
-              duration : 3000,
-              removeDelay : 1000, 
-              style :{
-                backgroundColor: "red", 
-                color : "white"
-              }
-            }}
-          />
-      <div className="h-screen flex items-center pt-30 flex-col px-4">
-        <div className="text-center text-amber-600 dark:text-[#FDC700] text-4xl font-bold my-4">
-          Login
-        </div>
-        <form
-          onSubmit={handleOnsubmit}
-          className="w-full max-w-md bg-slate-50 dark:bg-[#0F172C] border border-slate-200 dark:border-white/10 rounded-2xl p-8 space-y-4 text-slate-900 dark:text-white"
+    <div
+      ref={pageRef}
+      className="
+        relative
+        min-h-screen
+
+        overflow-hidden
+
+        bg-[#010617]
+        text-white
+      "
+    >
+      {/* =====================================================
+          TOASTS
+      ====================================================== */}
+
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        toasterId="loginPageForLogout"
+        toastOptions={{
+          className: "mt-15",
+          duration: 3000,
+          removeDelay: 1000,
+          style: {
+            backgroundColor: "green",
+            color: "white",
+          },
+        }}
+      />
+
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        toasterId="loginPageForSignup"
+        toastOptions={{
+          className: "mt-15",
+          duration: 3000,
+          removeDelay: 1000,
+          style: {
+            backgroundColor: "green",
+            color: "white",
+          },
+        }}
+      />
+
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        toasterId="login-first"
+        toastOptions={{
+          className: "mt-15",
+          duration: 3000,
+          removeDelay: 1000,
+          style: {
+            backgroundColor: "red",
+            color: "white",
+          },
+        }}
+      />
+
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        toasterId="wrongPass"
+        toastOptions={{
+          className: "",
+          duration: 3000,
+          removeDelay: 1000,
+          style: {
+            backgroundColor: "red",
+            color: "white",
+          },
+        }}
+      />
+
+      {/* =====================================================
+          AMBIENT BACKGROUND
+      ====================================================== */}
+
+      <div className="absolute inset-0 pointer-events-none">
+
+        {/* Top violet glow */}
+
+        <div
+          className="
+            absolute
+            -top-52
+            left-1/2
+            -translate-x-1/2
+
+            w-[600px]
+            h-[600px]
+
+            rounded-full
+
+            bg-violet-600/[0.09]
+
+            blur-[150px]
+          "
+        />
+
+        {/* Left glow */}
+
+        <div
+          className="
+            absolute
+            top-[35%]
+            -left-60
+
+            w-[450px]
+            h-[450px]
+
+            rounded-full
+
+            bg-purple-600/[0.06]
+
+            blur-[130px]
+          "
+        />
+
+        {/* Right glow */}
+
+        <div
+          ref={owlGlowRef}
+          className="
+            absolute
+            top-[25%]
+            -right-60
+
+            w-[500px]
+            h-[500px]
+
+            rounded-full
+
+            bg-indigo-600/[0.07]
+
+            blur-[140px]
+          "
+        />
+      </div>
+
+      {/* =====================================================
+          TOP ACCENT
+      ====================================================== */}
+
+      <div
+        className="
+          absolute
+          top-0
+          left-0
+          right-0
+
+          h-px
+
+          bg-gradient-to-r
+          from-transparent
+          via-violet-500/50
+          to-transparent
+        "
+      />
+
+      {/* =====================================================
+          CONTENT
+      ====================================================== */}
+
+      <div
+        className="
+          relative
+          z-10
+
+          min-h-screen
+
+          flex
+          flex-col
+          items-center
+
+          px-5
+          py-12
+          sm:py-16
+        "
+      >
+
+        {/* =================================================
+            BRAND
+        ================================================== */}
+
+        <div
+          className="
+            login-logo
+
+            flex
+            items-center
+            gap-2
+
+            select-none
+          "
         >
-          <input
-            type="text"
-            onChange={handleInput}
-            name="email"
-            placeholder="you@example.com"
-            className="w-full bg-white dark:bg-[#05070d] border border-slate-300 dark:border-white/10 rounded-lg px-4 py-2.5 text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-indigo-400"
-          />
-          <div className="relative">
-            <input
-              type={types}
-              onChange={handleInput}
-              name="password"
-              placeholder="At least 6 characters"
-              className="w-full bg-white dark:bg-[#05070d] border border-slate-300 dark:border-white/10 rounded-lg px-4 py-2.5 pr-10 text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-indigo-400"
-            />
-            <button
-              onClick={() =>
-                types == "password" ? SetTypes("text") : SetTypes("password")
-              }
-              type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-            >
-              {types == "password" ? (
-                <FontAwesomeIcon
-                  icon={faEye}
-                  className="text-gray-500 dark:text-gray-400 text-sm"
-                />
-              ) : (
-                <FontAwesomeIcon
-                  icon={faEyeSlash}
-                  className="text-gray-500 dark:text-gray-400 text-sm"
-                />
-              )}
-            </button>
-          </div>
-          <div className="text-red-500 text-sm">
-            {error}
-          </div>
-          <button
-            type="submit"
-            className={`w-full bg-indigo-500 hover:bg-indigo-400 transition rounded-lg py-2.5 font-medium flex justify-center items-center`}
+          <div
+            className="
+              w-9
+              h-9
+
+              rounded-xl
+
+              bg-gradient-to-br
+              from-violet-500/20
+              to-indigo-500/10
+
+              border
+              border-violet-400/15
+
+              flex
+              items-center
+              justify-center
+
+              shadow-[0_0_25px_rgba(124,58,237,0.12)]
+            "
           >
-            {loading ? <DotSpinner /> : "Login"}
-          </button>
-         
-        </form>
+            <FontAwesomeIcon
+              icon={faLock}
+              className="
+                text-violet-400
+                text-sm
+              "
+            />
+          </div>
+
+          <span
+            className="
+              text-lg
+              font-bold
+              tracking-tight
+            "
+          >
+            Vocab
+            <span
+              className="
+                bg-gradient-to-r
+                from-violet-400
+                to-indigo-400
+
+                bg-clip-text
+                text-transparent
+              "
+            >
+              ly
+            </span>
+          </span>
+        </div>
+
+        {/* =================================================
+            TITLE
+        ================================================== */}
+
+        <div
+          className="
+            login-title
+
+            text-center
+
+            mt-10
+          "
+        >
+          <h1
+            className="
+              text-3xl
+              sm:text-4xl
+
+              font-bold
+
+              tracking-tight
+
+              text-white
+            "
+          >
+            Welcome back
+          </h1>
+        </div>
+
+        <p
+          className="
+            login-subtitle
+
+            mt-3
+
+            text-sm
+            sm:text-base
+
+            text-slate-500
+
+            text-center
+          "
+        >
+          Continue your vocabulary learning journey.
+        </p>
+
+        {/* =================================================
+            LOGIN CARD
+        ================================================== */}
+
+        <div
+          ref={cardRef}
+          className="
+            relative
+
+            w-full
+            max-w-[430px]
+
+            mt-8
+
+            rounded-[24px]
+
+            bg-white/[0.035]
+
+            border
+            border-white/[0.08]
+
+            backdrop-blur-2xl
+
+            shadow-[0_30px_100px_rgba(0,0,0,0.4)]
+
+            overflow-hidden
+          "
+        >
+          {/* Card top glow */}
+
+          <div
+            className="
+              absolute
+              top-0
+              left-1/2
+              -translate-x-1/2
+
+              w-64
+              h-32
+
+              bg-violet-600/[0.08]
+
+              blur-[60px]
+
+              pointer-events-none
+            "
+          />
+
+          {/* Top border highlight */}
+
+          <div
+            className="
+              absolute
+              top-0
+              left-[15%]
+              right-[15%]
+
+              h-px
+
+              bg-gradient-to-r
+              from-transparent
+              via-violet-400/30
+              to-transparent
+            "
+          />
+
+          <form
+            onSubmit={handleOnsubmit}
+            className="
+              relative
+
+              p-6
+              sm:p-8
+
+              space-y-5
+            "
+          >
+            {/* =================================================
+                EMAIL
+            ================================================== */}
+
+            <div className="login-field">
+              <label
+                className="
+                  block
+
+                  mb-2
+
+                  text-xs
+                  font-medium
+
+                  tracking-wide
+
+                  text-slate-400
+                "
+              >
+                Email
+              </label>
+
+              <div className="relative">
+                <div
+                  className="
+                    absolute
+                    left-4
+                    top-1/2
+                    -translate-y-1/2
+
+                    text-slate-600
+
+                    pointer-events-none
+                  "
+                >
+                  <FontAwesomeIcon
+                    icon={faEnvelope}
+                    className="text-sm"
+                  />
+                </div>
+
+                <input
+                  type="email"
+                  onChange={handleInput}
+                  name="email"
+                  value={login.email}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  required
+                  className="
+                    w-full
+
+                    h-12
+
+                    pl-11
+                    pr-4
+
+                    rounded-xl
+
+                    bg-[#030819]
+
+                    border
+                    border-white/[0.08]
+
+                    text-sm
+                    text-white
+
+                    placeholder:text-slate-600
+
+                    outline-none
+
+                    transition-all
+                    duration-300
+
+                    focus:border-violet-400/40
+
+                    focus:ring-4
+                    focus:ring-violet-500/[0.07]
+
+                    hover:border-white/[0.14]
+                  "
+                />
+              </div>
+            </div>
+
+            {/* =================================================
+                PASSWORD
+            ================================================== */}
+
+            <div className="login-field">
+              <label
+                className="
+                  block
+
+                  mb-2
+
+                  text-xs
+                  font-medium
+
+                  tracking-wide
+
+                  text-slate-400
+                "
+              >
+                Password
+              </label>
+
+              <div className="relative">
+                <div
+                  className="
+                    absolute
+                    left-4
+                    top-1/2
+                    -translate-y-1/2
+
+                    text-slate-600
+
+                    pointer-events-none
+                  "
+                >
+                  <FontAwesomeIcon
+                    icon={faLock}
+                    className="text-sm"
+                  />
+                </div>
+
+                <input
+                  type={types}
+                  onChange={handleInput}
+                  name="password"
+                  value={login.password}
+                  placeholder="At least 6 characters"
+                  autoComplete="current-password"
+                  required
+                  className="
+                    w-full
+
+                    h-12
+
+                    pl-11
+                    pr-12
+
+                    rounded-xl
+
+                    bg-[#030819]
+
+                    border
+                    border-white/[0.08]
+
+                    text-sm
+                    text-white
+
+                    placeholder:text-slate-600
+
+                    outline-none
+
+                    transition-all
+                    duration-300
+
+                    focus:border-violet-400/40
+
+                    focus:ring-4
+                    focus:ring-violet-500/[0.07]
+
+                    hover:border-white/[0.14]
+                  "
+                />
+
+                <button
+                  onClick={() =>
+                    types === "password"
+                      ? SetTypes("text")
+                      : SetTypes("password")
+                  }
+                  type="button"
+                  aria-label={
+                    types === "password"
+                      ? "Show password"
+                      : "Hide password"
+                  }
+                  className="
+                    absolute
+                    right-3
+                    top-1/2
+                    -translate-y-1/2
+
+                    w-8
+                    h-8
+
+                    rounded-lg
+
+                    flex
+                    items-center
+                    justify-center
+
+                    text-slate-500
+                    hover:text-violet-300
+
+                    hover:bg-white/[0.05]
+
+                    transition-all
+                    duration-200
+                  "
+                >
+                  <FontAwesomeIcon
+                    icon={
+                      types === "password"
+                        ? faEye
+                        : faEyeSlash
+                    }
+                    className="text-sm"
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* =================================================
+                ERROR
+            ================================================== */}
+
+            {error && (
+              <div
+                className="
+                  text-red-400
+                  text-xs
+                  px-1
+                "
+              >
+                {error}
+              </div>
+            )}
+
+            {/* =================================================
+                LOGIN BUTTON
+            ================================================== */}
+
+            <button
+              type="submit"
+              disabled={loading}
+              onMouseEnter={handleButtonEnter}
+              onMouseLeave={handleButtonLeave}
+              className="
+                login-submit
+
+                group
+
+                relative
+
+                w-full
+                h-12
+
+                overflow-hidden
+
+                rounded-xl
+
+                bg-gradient-to-r
+                from-violet-600
+                via-purple-600
+                to-indigo-600
+
+                border
+                border-violet-400/20
+
+                text-white
+
+                font-semibold
+                text-sm
+
+                shadow-[0_0_30px_rgba(124,58,237,0.18)]
+
+                transition-all
+                duration-300
+
+                hover:shadow-[0_0_40px_rgba(124,58,237,0.3)]
+
+                disabled:opacity-70
+                disabled:cursor-not-allowed
+              "
+            >
+              {/* Shine */}
+
+              <span
+                className="
+                  absolute
+                  inset-0
+
+                  -translate-x-full
+
+                  group-hover:translate-x-full
+
+                  transition-transform
+                  duration-700
+
+                  bg-gradient-to-r
+                  from-transparent
+                  via-white/15
+                  to-transparent
+                "
+              />
+
+              <span
+                className="
+                  relative
+
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                "
+              >
+                {loading ? (
+                  <DotSpinner />
+                ) : (
+                  <>
+                    <span>Login</span>
+
+                    <FontAwesomeIcon
+                      icon={faArrowRight}
+                      className="
+                        text-xs
+
+                        transition-transform
+                        duration-300
+
+                        group-hover:translate-x-1
+                      "
+                    />
+                  </>
+                )}
+              </span>
+            </button>
+
+            {/* =================================================
+                BOTTOM INFO
+            ================================================== */}
+
+            <div
+              className="
+                flex
+                items-center
+                justify-center
+                gap-2
+
+                pt-1
+
+                text-[11px]
+                text-slate-600
+              "
+            >
+              <FontAwesomeIcon
+                icon={faLock}
+                className="text-[9px]"
+              />
+
+              Your account is securely protected.
+            </div>
+          </form>
+        </div>
+
+        {/* =================================================
+            FOOTER TEXT
+        ================================================== */}
+
+        <p
+          className="
+            mt-7
+
+            text-xs
+
+            text-slate-600
+
+            text-center
+          "
+        >
+          Learn smarter with{" "}
+          <span className="text-violet-400">
+            Vocably
+          </span>
+        </p>
       </div>
     </div>
   );
 }
 
 export default Login;
+
