@@ -1143,6 +1143,7 @@ function HomePage() {
                 className="
                   relative
                   p-7
+                  h-75
                   rounded-2xl
                   bg-[#060b20]
                   border

@@ -46,17 +46,17 @@ function Footer() {
   const productLinks = [
     {
       name: "Learn",
-      path: "/learn",
+      path: "/fetch-video",
       icon: faBookOpen,
     },
     {
       name: "Progress",
-      path: "/progress",
+      path: "/dashboard",
       icon: faChartLine,
     },
     {
       name: "Pricing",
-      path: "/pricing",
+      path: "/about",
       icon: faTag,
     },
   ];
@@ -69,7 +69,7 @@ function Footer() {
     },
     {
       name: "Contact",
-      path: "/contact",
+      path: "/about",
       icon: faEnvelope,
     },
   ];
@@ -77,12 +77,12 @@ function Footer() {
   const legalLinks = [
     {
       name: "Privacy",
-      path: "/privacy",
+      path: "/",
       icon: faShieldHalved,
     },
     {
       name: "Terms",
-      path: "/terms",
+      path: "/",
       icon: faFileContract,
     },
   ];
