@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-
+import { Toaster } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
@@ -213,7 +213,9 @@ function HomePage() {
   };
 
   return (
+    
     <main
+    
       ref={pageRef}
       className="
         min-h-screen
@@ -225,7 +227,21 @@ function HomePage() {
       {/* =====================================================
           GLOBAL AMBIENT LIGHT
       ====================================================== */}
-
+<Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        toasterId="afterLogin"
+        toastOptions={{
+          className: "mt-15",
+          duration: 3000,
+          removeDelay: 1000,
+          style: {
+            backgroundColor: "green",
+            color: "white",
+          },
+        }}
+      />
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div
           className="
