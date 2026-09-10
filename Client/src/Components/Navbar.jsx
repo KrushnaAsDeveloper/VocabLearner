@@ -392,8 +392,7 @@ function Navbar() {
               "
             >
               {userStatus ? navLinks.map((link) => (
-                <NavLink
-                  key={link.name}
+                <NavLink key={link.name}
                   to={link.path}
                   end={link.path === "/"}
                   className={navLinkClass}
@@ -403,6 +402,7 @@ function Navbar() {
                 >
                   {link.name}
                 </NavLink> 
+
               )) : navLinks.filter(elem => elem.name !== "History" && elem.name !== "Dashboard").map((link)=>(<NavLink key={link.name} to={link.path} end={link.path === "/"} className={navLinkClass}>{link.name}</NavLink>))}
             </div>
           </div>
