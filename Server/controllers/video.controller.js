@@ -5,6 +5,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadFileOnCloudinary } from "../utils/cloudinary.js";
 import {fetchTranscript} from "youtube-transcript"
 import { Transcript } from "../models/transcript.model.js";
+
+
 export const converUrlToEmbed = asyncHandler(async (req, res) =>{
     const {url} = req.body
     if(!url){
@@ -73,13 +75,8 @@ export const uploadVideo = asyncHandler(async (req, res)=>{
       throw new ApiError(400, "Upload The File First")
     }
 
-    const localFilePath = req.file.path
-    if(!localFilePath){
-        throw new ApiError(501, "Error while uploading multer file, local file path not found")
-    }
-
-    const response = await uploadFileOnCloudinary(localFilePath)
-    // console.log(response) // whole cloudinary response
+    const response = await uploadFileOnCloudinary(req.file.buffer, "video")
+    console.log(response) // whole cloudinary response
     if(!response){
         throw new ApiError(501, "Error while uploading on cloudinery")
         
