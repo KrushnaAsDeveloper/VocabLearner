@@ -13,3 +13,4 @@ Thumbs.db
 # Block log outputs but retain a specific example file
 *.log
 !example.log
+middlewares/multer.middleware.js
