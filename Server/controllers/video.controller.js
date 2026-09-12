@@ -76,7 +76,6 @@ export const uploadVideo = asyncHandler(async (req, res)=>{
     }
 
     const response = await uploadFileOnCloudinary(req.file.buffer, "video")
-    console.log(response) // whole cloudinary response
     if(!response){
         throw new ApiError(501, "Error while uploading on cloudinery")
         
