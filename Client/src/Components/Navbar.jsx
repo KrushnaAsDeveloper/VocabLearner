@@ -1,8 +1,9 @@
 // Navbar.jsx
 
 const API_URL = import.meta.env.VITE_API_URL;
+
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Link, Links, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import DarkModeButton from "./DarkModeButton";
 import axios from "axios";
 import { useAuthContext } from "../Context/authContext";
@@ -31,8 +32,6 @@ function Navbar() {
 
   // =========================================================
   // NAVBAR INTRO
-  // Only animate the navbar itself.
-  // DO NOT animate link opacity.
   // =========================================================
 
   useEffect(() => {
@@ -88,7 +87,7 @@ function Navbar() {
           duration: 0.25,
           stagger: 0.05,
           ease: "power2.out",
-        },
+        }
       );
     } else {
       gsap.to(mobileMenuRef.current, {
@@ -216,18 +215,24 @@ function Navbar() {
 
   const navLinkClass = ({ isActive }) => `
     relative
+
     px-3
     py-2
+
     rounded-lg
 
     text-[14px]
     font-medium
     tracking-wide
-    transition-colors
 
+    transition-colors
     duration-300
-    
-    ${isActive ? "text-white" : "text-slate-400 hover:text-slate-100"}
+
+    ${
+      isActive
+        ? "text-slate-900 dark:text-white"
+        : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+    }
 
     after:absolute
     after:left-1/2
@@ -261,12 +266,18 @@ function Navbar() {
         z-50
         w-full
 
-        bg-[#010617]
+        bg-white
+        dark:bg-[#010617]
 
         border-b
-        border-white/[0.07]
+        border-slate-200
+        dark:border-white/[0.07]
 
-        shadow-[0_4px_25px_rgba(0,0,0,0.18)]
+        shadow-[0_4px_25px_rgba(0,0,0,0.08)]
+        dark:shadow-[0_4px_25px_rgba(0,0,0,0.18)]
+
+        transition-colors
+        duration-300
       "
     >
       {/* =====================================================
@@ -308,7 +319,6 @@ function Navbar() {
           className="
             h-[68px]
 
-
             flex
             items-center
             justify-between
@@ -327,7 +337,6 @@ function Navbar() {
               flex
               items-center
               shrink-0
-
               select-none
             "
           >
@@ -350,7 +359,11 @@ function Navbar() {
                 font-bold
                 tracking-tight
 
-                text-white
+                text-slate-900
+                dark:text-white
+
+                transition-colors
+                duration-300
               "
             >
               Vocab
@@ -391,19 +404,36 @@ function Navbar() {
                 gap-1
               "
             >
-              {userStatus ? navLinks.map((link) => (
-                <NavLink key={link.name}
-                  to={link.path}
-                  end={link.path === "/"}
-                  className={navLinkClass}
-                  onClick={reLogin}
-                  onMouseEnter={handleLinkEnter}
-                  onMouseLeave={handleLinkLeave}
-                >
-                  {link.name}
-                </NavLink> 
-
-              )) : navLinks.filter(elem => elem.name !== "History" && elem.name !== "Dashboard").map((link)=>(<NavLink key={link.name} to={link.path} end={link.path === "/"} className={navLinkClass}>{link.name}</NavLink>))}
+              {userStatus
+                ? navLinks.map((link) => (
+                    <NavLink
+                      key={link.name}
+                      to={link.path}
+                      end={link.path === "/"}
+                      className={navLinkClass}
+                      onClick={reLogin}
+                      onMouseEnter={handleLinkEnter}
+                      onMouseLeave={handleLinkLeave}
+                    >
+                      {link.name}
+                    </NavLink>
+                  ))
+                : navLinks
+                    .filter(
+                      (elem) =>
+                        elem.name !== "History" &&
+                        elem.name !== "Dashboard"
+                    )
+                    .map((link) => (
+                      <NavLink
+                        key={link.name}
+                        to={link.path}
+                        end={link.path === "/"}
+                        className={navLinkClass}
+                      >
+                        {link.name}
+                      </NavLink>
+                    ))}
             </div>
           </div>
 
@@ -434,10 +464,13 @@ function Navbar() {
                   text-[14px]
                   font-medium
 
-                  text-slate-400
-                  hover:text-white
+                  text-slate-600
+                  hover:text-slate-900
+                  hover:bg-slate-100
 
-                  hover:bg-white/[0.04]
+                  dark:text-slate-400
+                  dark:hover:text-white
+                  dark:hover:bg-white/[0.04]
 
                   transition-all
                   duration-300
@@ -457,10 +490,13 @@ function Navbar() {
                   text-[14px]
                   font-medium
 
-                  text-slate-400
-                  hover:text-white
+                  text-slate-600
+                  hover:text-slate-900
+                  hover:bg-slate-100
 
-                  hover:bg-white/[0.04]
+                  dark:text-slate-400
+                  dark:hover:text-white
+                  dark:hover:bg-white/[0.04]
 
                   transition-all
                   duration-300
@@ -513,7 +549,8 @@ function Navbar() {
                 pl-3
 
                 border-l
-                border-white/[0.08]
+                border-slate-200
+                dark:border-white/[0.08]
               "
             >
               <DarkModeButton />
@@ -539,14 +576,21 @@ function Navbar() {
 
               rounded-lg
 
-              text-slate-300
-              hover:text-white
+              text-slate-700
+              hover:text-slate-900
 
-              bg-white/[0.04]
-              hover:bg-white/[0.08]
+              dark:text-slate-300
+              dark:hover:text-white
+
+              bg-slate-100
+              hover:bg-slate-200
+
+              dark:bg-white/[0.04]
+              dark:hover:bg-white/[0.08]
 
               border
-              border-white/[0.08]
+              border-slate-200
+              dark:border-white/[0.08]
 
               transition-all
               duration-300
@@ -600,10 +644,15 @@ function Navbar() {
 
           overflow-hidden
 
-          bg-[#010617]
+          bg-white
+          dark:bg-[#010617]
 
           border-t
-          border-white/[0.06]
+          border-slate-200
+          dark:border-white/[0.06]
+
+          transition-colors
+          duration-300
         "
       >
         <div
@@ -615,60 +664,78 @@ function Navbar() {
           {/* Links */}
 
           <div className="flex flex-col gap-1">
-            {userStatus ? navLinks.map((link) => (
-              <NavLink
-                key={link.name}
-                to={link.path}
-                end={link.path === "/"}
-                onClick={() => {
-                  setOpen(false);
-                  reLogin();
-                }}
-                className={({ isActive }) => `
-                  mobile-link
+            {userStatus
+              ? navLinks.map((link) => (
+                  <NavLink
+                    key={link.name}
+                    to={link.path}
+                    end={link.path === "/"}
+                    onClick={() => {
+                      setOpen(false);
+                      reLogin();
+                    }}
+                    className={({ isActive }) => `
+                      mobile-link
 
-                  px-4
-                  py-3
+                      px-4
+                      py-3
 
-                  rounded-lg
+                      rounded-lg
 
-                  text-[14px]
-                  font-medium
+                      text-[14px]
+                      font-medium
 
-                  transition-all
-                  duration-300
+                      transition-all
+                      duration-300
 
-                  ${
-                    isActive
-                      ? "text-white bg-violet-500/10 border border-violet-400/10"
-                      : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
-                  }
-                `}
-              >
-                {link.name}
-              </NavLink>
-            )) : navLinks.filter(link => link.name !== "History" && link.name !== "Dashboard").map(elem =>(<NavLink key={elem.name}
-                to={elem.path}
-                end={elem.path === "/"}   className={({ isActive }) => `
-                  mobile-link
+                      ${
+                        isActive
+                          ? "text-violet-700 bg-violet-50 border border-violet-200 dark:text-white dark:bg-violet-500/10 dark:border-violet-400/10"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/[0.04]"
+                      }
+                    `}
+                  >
+                    {link.name}
+                  </NavLink>
+                ))
+              : navLinks
+                  .filter(
+                    (link) =>
+                      link.name !== "History" &&
+                      link.name !== "Dashboard"
+                  )
+                  .map((elem) => (
+                    <NavLink
+                      key={elem.name}
+                      to={elem.path}
+                      end={elem.path === "/"}
+                      className={({ isActive }) => `
+                        mobile-link
 
-                  px-4
-                  py-3
+                        px-4
+                        py-3
 
-                  rounded-lg
+                        rounded-lg
 
-                  text-[14px]
-                  font-medium
+                        text-[14px]
+                        font-medium
 
-                  transition-all
-                  duration-300
+                        transition-all
+                        duration-300
 
-                  ${
-                    isActive
-                      ? "text-white bg-violet-500/10 border border-violet-400/10"
-                      : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
-                  }
-                `} onClick={()=>{ setOpen(false)}}>{elem.name}</NavLink>))}
+                        ${
+                          isActive
+                            ? "text-violet-700 bg-violet-50 border border-violet-200 dark:text-white dark:bg-violet-500/10 dark:border-violet-400/10"
+                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/[0.04]"
+                        }
+                      `}
+                      onClick={() => {
+                        setOpen(false);
+                      }}
+                    >
+                      {elem.name}
+                    </NavLink>
+                  ))}
           </div>
 
           {/* Mobile bottom */}
@@ -679,16 +746,21 @@ function Navbar() {
               pt-4
 
               border-t
-              border-white/[0.06]
+              border-slate-200
+              dark:border-white/[0.06]
 
               flex
               flex-col
               gap-2
             "
           >
+            {/* Dark Mode */}
+
             <div className="mobile-link">
               <DarkModeButton />
             </div>
+
+            {/* Login / Logout */}
 
             {userStatus ? (
               <button
@@ -710,10 +782,13 @@ function Navbar() {
                   text-[14px]
                   font-medium
 
-                  text-slate-400
-                  hover:text-white
+                  text-slate-600
+                  hover:text-slate-900
+                  hover:bg-slate-100
 
-                  hover:bg-white/[0.04]
+                  dark:text-slate-400
+                  dark:hover:text-white
+                  dark:hover:bg-white/[0.04]
 
                   transition-all
                   duration-300
@@ -736,10 +811,13 @@ function Navbar() {
                   text-[14px]
                   font-medium
 
-                  text-slate-400
-                  hover:text-white
+                  text-slate-600
+                  hover:text-slate-900
+                  hover:bg-slate-100
 
-                  hover:bg-white/[0.04]
+                  dark:text-slate-400
+                  dark:hover:text-white
+                  dark:hover:bg-white/[0.04]
 
                   transition-all
                   duration-300
@@ -748,6 +826,8 @@ function Navbar() {
                 Log in
               </Link>
             )}
+
+            {/* Signup */}
 
             <Link
               to="/signup"
