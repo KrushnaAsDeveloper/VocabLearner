@@ -13,21 +13,48 @@ function VideoPlyer() {
 
   return (
     <>
-     <Toaster
-            position="top-center"
-            reverseOrder={false}
-            gutter={8}
-            toasterId='video-player'
-            toastOptions={{
-              className : "mt-15", 
-              duration : 3000,
-              removeDelay : 1000, 
-              style :{
-                backgroundColor: "green", 
-                color : "white"
-              }
-            }}
-          />
+   <Toaster
+  position="top-center"
+  reverseOrder={false}
+  gutter={8}
+  toasterId="video-player"
+  toastOptions={{
+    duration: 3000,
+    removeDelay: 1000,
+
+    style: {
+      marginTop: "70px",
+      background: "rgba(25, 21, 57, 0.95)",
+      color: "#F5F3FF",
+      border: "1px solid rgba(166, 132, 255, 0.25)",
+      borderRadius: "14px",
+      padding: "14px 18px",
+      fontSize: "14px",
+      fontWeight: "500",
+      boxShadow:
+        "0 10px 40px rgba(0, 0, 0, 0.35), 0 0 20px rgba(139, 92, 246, 0.12)",
+      backdropFilter: "blur(12px)",
+    },
+
+    success: {
+      iconTheme: {
+        primary: "#A684FF",
+        secondary: "#191539",
+      },
+
+      style: {
+        marginTop: "70px",
+        background: "linear-gradient(135deg, #191539, #211A4A)",
+        color: "#F5F3FF",
+        border: "1px solid rgba(166, 132, 255, 0.35)",
+        borderRadius: "14px",
+        padding: "14px 18px",
+        boxShadow:
+          "0 10px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(166, 132, 255, 0.15)",
+      },
+    },
+  }}
+/>
       <div className='flex justify-center items-center h-full flex-col bg-white dark:bg-slate-950'>
         <h1 className='text-amber-600 dark:text-[#FDC700] font-bold text-3xl italic mt-10'>{object.title}</h1>
 

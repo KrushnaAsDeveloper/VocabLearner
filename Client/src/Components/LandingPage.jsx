@@ -228,20 +228,47 @@ function HomePage() {
           GLOBAL AMBIENT LIGHT
       ====================================================== */}
 <Toaster
-        position="top-center"
-        reverseOrder={false}
-        gutter={8}
-        toasterId="afterLogin"
-        toastOptions={{
-          className: "mt-15",
-          duration: 3000,
-          removeDelay: 1000,
-          style: {
-            backgroundColor: "green",
-            color: "white",
-          },
-        }}
-      />
+  position="top-center"
+  reverseOrder={false}
+  gutter={8}
+  toasterId="afterLogin"
+  toastOptions={{
+    duration: 3000,
+    removeDelay: 1000,
+
+    style: {
+      marginTop: "70px",
+      background: "rgba(25, 21, 57, 0.95)",
+      color: "#F5F3FF",
+      border: "1px solid rgba(166, 132, 255, 0.25)",
+      borderRadius: "14px",
+      padding: "14px 18px",
+      fontSize: "14px",
+      fontWeight: "500",
+      boxShadow:
+        "0 10px 40px rgba(0, 0, 0, 0.35), 0 0 20px rgba(139, 92, 246, 0.12)",
+      backdropFilter: "blur(12px)",
+    },
+
+    success: {
+      iconTheme: {
+        primary: "#A684FF",
+        secondary: "#191539",
+      },
+
+      style: {
+        marginTop: "70px",
+        background: "linear-gradient(135deg, #191539, #211A4A)",
+        color: "#F5F3FF",
+        border: "1px solid rgba(166, 132, 255, 0.35)",
+        borderRadius: "14px",
+        padding: "14px 18px",
+        boxShadow:
+          "0 10px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(166, 132, 255, 0.15)",
+      },
+    },
+  }}
+/>
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div
           className="
@@ -833,264 +860,168 @@ function HomePage() {
           FEATURES
       ====================================================== */}
 
-      <section className="relative py-28 reveal-section">
-        <div
-          className="
-            max-w-7xl
-            mx-auto
-            px-5
-            sm:px-6
-            lg:px-8
-          "
-        >
-          <div className="max-w-2xl mb-14">
-            <span
-              className="
-                text-sm
-                font-semibold
-                tracking-wider
-                uppercase
-                text-violet-400
-              "
-            >
-              Why Vocably
-            </span>
+      <section className="relative py-10 mt-10  reveal-section">
+  <div
+    className="
+      max-w-7xl mx-auto
+      px-5 sm:px-6 lg:px-8
+      grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px]
+      gap-10 lg:gap-12
+      items-start
+    "
+  >
+    {/* ================= LEFT : FEATURES ================= */}
+    <div className="min-w-0">
+      {/* Heading */}
+      <div className="text-center lg:text-left mb-10">
+        <p className="text-sm font-semibold tracking-widest text-violet-400 uppercase mb-3">
+          Why Vocably?
+        </p>
 
-            <h2
-              className="
-                mt-3
-                text-3xl
-                sm:text-4xl
-                lg:text-5xl
-                font-bold
-                tracking-tight
-              "
-            >
-              Learn vocabulary
-              <span className="text-slate-500">
-                {" "}without forcing it.
-              </span>
-            </h2>
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
+          Learn vocabulary
+          <span className="text-violet-400"> naturally.</span>
+        </h2>
 
-            <p
-              className="
-                mt-5
-                text-slate-400
-                leading-7
-                max-w-xl
-              "
-            >
-              Vocably makes vocabulary learning part of your
-              everyday content instead of another boring study
-              session.
-            </p>
-          </div>
+        <p className="mt-4 text-slate-400 max-w-2xl mx-auto lg:mx-0">
+          Turn the content you already enjoy into an interactive
+          vocabulary-learning experience.
+        </p>
+      </div>
 
-          <div
-            className="
-              features-grid
-              grid
-              md:grid-cols-2
-              lg:grid-cols-3
-              gap-5
-            "
-          >
-            {/* =================================================
-                FEATURE 1
-            ================================================== */}
+      {/* Feature Cards */}
+      <div className="features-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
-            <div
-              className="
-                feature-card
-                group
-                relative
-                p-7
-                rounded-2xl
-                bg-white/[0.025]
-                border
-                border-white/[0.07]
-                hover:border-violet-400/20
-                transition-all
-                duration-300
-                overflow-hidden
-              "
-              onMouseEnter={cardEnter}
-              onMouseLeave={cardLeave}
-            >
-              <div
-                className="
-                  absolute
-                  -top-20
-                  -right-20
-                  w-40
-                  h-40
-                  bg-violet-600/[0.08]
-                  blur-3xl
-                  rounded-full
-                  group-hover:bg-violet-600/[0.14]
-                  transition-all
-                "
-              />
-
-              <div
-                className="
-                  relative
-                  w-12
-                  h-12
-                  rounded-xl
-                  bg-violet-500/10
-                  border
-                  border-violet-400/10
-                  flex
-                  items-center
-                  justify-center
-                  text-violet-400
-                  text-lg
-                "
-              >
-                <FontAwesomeIcon icon={faYoutube} />
-              </div>
-
-              <h3 className="relative mt-6 text-lg font-semibold">
-                Learn from YouTube
-              </h3>
-
-              <p className="relative mt-3 text-sm text-slate-500 leading-6">
-                Use videos you already enjoy and turn them into
-                useful vocabulary-learning material.
-              </p>
-            </div>
-
-            {/* =================================================
-                FEATURE 2
-            ================================================== */}
-
-            <div
-              className="
-                feature-card
-                group
-                relative
-                p-7
-                rounded-2xl
-                bg-white/[0.025]
-                border
-                border-white/[0.07]
-                hover:border-purple-400/20
-                transition-all
-                duration-300
-                overflow-hidden
-              "
-              onMouseEnter={cardEnter}
-              onMouseLeave={cardLeave}
-            >
-              <div
-                className="
-                  absolute
-                  -top-20
-                  -right-20
-                  w-40
-                  h-40
-                  bg-purple-600/[0.08]
-                  blur-3xl
-                  rounded-full
-                "
-              />
-
-              <div
-                className="
-                  relative
-                  w-12
-                  h-12
-                  rounded-xl
-                  bg-purple-500/10
-                  border
-                  border-purple-400/10
-                  flex
-                  items-center
-                  justify-center
-                  text-purple-400
-                  text-lg
-                "
-              >
-                <FontAwesomeIcon icon={faUpload} />
-              </div>
-
-              <h3 className="relative mt-6 text-lg font-semibold">
-                Upload your videos
-              </h3>
-
-              <p className="relative mt-3 text-sm text-slate-500 leading-6">
-                Have your own content? Upload it and build your
-                learning experience around it.
-              </p>
-            </div>
-
-            {/* =================================================
-                FEATURE 3
-            ================================================== */}
-
-            <div
-              className="
-                feature-card
-                group
-                relative
-                p-7
-                rounded-2xl
-                bg-white/[0.025]
-                border
-                border-white/[0.07]
-                hover:border-indigo-400/20
-                transition-all
-                duration-300
-                overflow-hidden
-              "
-              onMouseEnter={cardEnter}
-              onMouseLeave={cardLeave}
-            >
-              <div
-                className="
-                  absolute
-                  -top-20
-                  -right-20
-                  w-40
-                  h-40
-                  bg-indigo-600/[0.08]
-                  blur-3xl
-                  rounded-full
-                "
-              />
-
-              <div
-                className="
-                  relative
-                  w-12
-                  h-12
-                  rounded-xl
-                  bg-indigo-500/10
-                  border
-                  border-indigo-400/10
-                  flex
-                  items-center
-                  justify-center
-                  text-indigo-400
-                  text-lg
-                "
-              >
-                <FontAwesomeIcon icon={faBrain} />
-              </div>
-
-              <h3 className="relative mt-6 text-lg font-semibold">
-                Build your vocabulary
-              </h3>
-
-              <p className="relative mt-3 text-sm text-slate-500 leading-6">
-                Discover useful words from real-world content and
-                make them easier to remember.
-              </p>
-            </div>
-          </div>
+        {/* YouTube */}
+        <div className="feature-card min-w-0">
+          {/* YOUR EXISTING YOUTUBE CARD */}
         </div>
-      </section>
+
+        {/* Upload */}
+        <div className="feature-card min-w-0">
+          {/* YOUR EXISTING UPLOAD CARD */}
+        </div>
+
+        {/* Brain */}
+        <div className="feature-card min-w-0">
+          {/* YOUR EXISTING BRAIN CARD */}
+        </div>
+
+      </div>
+    </div>
+
+    {/* ================= RIGHT : VOCABLY WAY ================= */}
+    <div
+      className="
+        w-full
+        lg:sticky lg:top-24
+        rounded-3xl
+        border border-white/10
+        bg-white/[0.03]
+        backdrop-blur-xl
+        p-6 sm:p-7
+        overflow-hidden
+      "
+    >
+      {/* Glow */}
+      <div
+        className="
+          absolute
+          -top-20 -right-20
+          w-40 h-40
+          bg-violet-600/20
+          blur-3xl
+          rounded-full
+          pointer-events-none
+        "
+      />
+
+      <div className="relative">
+        <p className="text-xs font-semibold tracking-[0.2em] text-violet-400 uppercase">
+          The Vocably Way
+        </p>
+
+        <h3 className="mt-3 text-2xl sm:text-3xl font-bold leading-tight">
+          Learn naturally.
+          <br />
+          <span className="text-violet-400">
+            Remember effortlessly.
+          </span>
+        </h3>
+
+        <div className="mt-8 space-y-6">
+
+          {/* Step 01 */}
+          <div className="flex gap-4">
+            <div className="shrink-0 w-9 h-9 rounded-xl bg-violet-500/10 border border-violet-400/20 flex items-center justify-center">
+              <span className="text-xs font-bold text-violet-400">
+                01
+              </span>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white">
+                Watch
+              </h4>
+
+              <p className="mt-1 text-sm text-slate-400 leading-relaxed">
+                Start with content you actually enjoy.
+              </p>
+            </div>
+          </div>
+
+          {/* Step 02 */}
+          <div className="flex gap-4">
+            <div className="shrink-0 w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-400/20 flex items-center justify-center">
+              <span className="text-xs font-bold text-purple-400">
+                02
+              </span>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white">
+                Discover
+              </h4>
+
+              <p className="mt-1 text-sm text-slate-400 leading-relaxed">
+                Find useful words directly inside the content.
+              </p>
+            </div>
+          </div>
+
+          {/* Step 03 */}
+          <div className="flex gap-4">
+            <div className="shrink-0 w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center">
+              <span className="text-xs font-bold text-indigo-400">
+                03
+              </span>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white">
+                Remember
+              </h4>
+
+              <p className="mt-1 text-sm text-slate-400 leading-relaxed">
+                Review and turn new words into lasting knowledge.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Bottom quote */}
+        <div className="mt-8 pt-6 border-t border-white/10">
+          <p className="text-sm text-slate-400 italic leading-relaxed">
+            "Learning works better when it feels like something
+            you enjoy."
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
 
       {/* =====================================================
           HOW IT WORKS
@@ -1166,7 +1097,7 @@ function HomePage() {
                   border-white/[0.07]
                 "
               >
-                <span className="text-5xl font-bold text-white/[0.06]">
+                <span className="text-5xl font-bold text-white/[0.70]">
                   01
                 </span>
 
@@ -1211,7 +1142,7 @@ function HomePage() {
                   border-white/[0.07]
                 "
               >
-                <span className="text-5xl font-bold text-white/[0.06]">
+                <span className="text-5xl font-bold text-white/[0.70]">
                   02
                 </span>
 
@@ -1257,7 +1188,7 @@ function HomePage() {
                   border-white/[0.07]
                 "
               >
-                <span className="text-5xl font-bold text-white/[0.06]">
+                <span className="text-5xl font-bold text-white/[0.70]">
                   03
                 </span>
 

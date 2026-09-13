@@ -217,36 +217,88 @@ function Signup() {
       ====================================================== */}
 
       <Toaster
-        position="top-center"
-        reverseOrder={false}
-        gutter={8}
-        toasterId="loginPageForSignup"
-        toastOptions={{
-          className: "mt-15",
-          duration: 3000,
-          removeDelay: 1000,
-          style: {
-            backgroundColor: "green",
-            color: "white",
-          },
-        }}
-      />
+  position="top-center"
+  reverseOrder={false}
+  gutter={8}
+  toasterId="loginPageForSignup"
+  toastOptions={{
+    duration: 3000,
+    removeDelay: 1000,
+
+    style: {
+      marginTop: "70px",
+      background: "rgba(25, 21, 57, 0.95)",
+      color: "#F5F3FF",
+      border: "1px solid rgba(166, 132, 255, 0.25)",
+      borderRadius: "14px",
+      padding: "14px 18px",
+      fontSize: "14px",
+      fontWeight: "500",
+      boxShadow:
+        "0 10px 40px rgba(0, 0, 0, 0.35), 0 0 20px rgba(139, 92, 246, 0.12)",
+      backdropFilter: "blur(12px)",
+    },
+
+    success: {
+      iconTheme: {
+        primary: "#A684FF",
+        secondary: "#191539",
+      },
+
+      style: {
+        marginTop: "70px",
+        background: "linear-gradient(135deg, #191539, #211A4A)",
+        color: "#F5F3FF",
+        border: "1px solid rgba(166, 132, 255, 0.35)",
+        borderRadius: "14px",
+        padding: "14px 18px",
+        boxShadow:
+          "0 10px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(166, 132, 255, 0.15)",
+      },
+    },
+  }}
+/>
+
 
       <Toaster
-        position="top-center"
-        reverseOrder={false}
-        gutter={8}
-        toasterId="signUpError"
-        toastOptions={{
-          className: "",
-          duration: 3000,
-          removeDelay: 1000,
-          style: {
-            backgroundColor: "red",
-            color: "white",
-          },
-        }}
-      />
+  position="top-center"
+  reverseOrder={false}
+  gutter={8}
+  toasterId="signUpError"
+  toastOptions={{
+    duration: 4000,
+    removeDelay: 1000,
+
+    style: {
+      marginTop: "70px",
+      background: "rgba(25, 21, 57, 0.96)",
+      color: "#FFECEF",
+      border: "1px solid rgba(255, 107, 129, 0.35)",
+      borderRadius: "16px",
+      padding: "14px 18px",
+      fontSize: "14px",
+      fontWeight: "500",
+      boxShadow:
+        "0 12px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(255, 107, 129, 0.12)",
+      backdropFilter: "blur(14px)",
+    },
+
+    error: {
+      style: {
+        background: "linear-gradient(135deg, #24111A, #321421)",
+        color: "#FFECEF",
+        border: "1px solid rgba(255, 107, 129, 0.35)",
+        boxShadow:
+          "0 12px 40px rgba(0, 0, 0, 0.45), 0 0 25px rgba(255, 107, 129, 0.15)",
+      },
+
+      iconTheme: {
+        primary: "#FF6B81",
+        secondary: "#24111A",
+      },
+    },
+  }}
+/>
 
       {/* =====================================================
           AMBIENT BACKGROUND
@@ -616,7 +668,7 @@ function Signup() {
                     outline-none
 
                     transition-all
-                    duration-300
+                    duration-200
 
                     focus:border-violet-400/40
 
@@ -701,7 +753,7 @@ function Signup() {
                     outline-none
 
                     transition-all
-                    duration-300
+                    duration-200
 
                     focus:border-violet-400/40
 
@@ -799,7 +851,7 @@ function Signup() {
                 shadow-[0_0_30px_rgba(124,58,237,0.18)]
 
                 transition-all
-                duration-300
+                duration-200
 
                 hover:shadow-[0_0_40px_rgba(124,58,237,0.3)]
 
@@ -819,7 +871,7 @@ function Signup() {
                   group-hover:translate-x-full
 
                   transition-transform
-                  duration-700
+                  duration-500
 
                   bg-gradient-to-r
                   from-transparent
@@ -850,7 +902,7 @@ function Signup() {
                         text-xs
 
                         transition-transform
-                        duration-300
+                        duration-200
 
                         group-hover:translate-x-1
                       "
