@@ -33,8 +33,12 @@ export const converUrlToEmbed = asyncHandler(async (req, res) => {
     if (!videoId)
         throw new ApiError(404, "invalid youtube url || url controller");
     let existed = await Video.findOne({ VideoId: videoId, user: req.user._id });
-    const transcript = await fetchTranscript(videoId);
-    const store = transcript.map((elem, idx) => ({
+    const transExisted = await Transcript.findOne({ videoId: videoId });
+
+    
+         const transcript = await fetchTranscript(videoId);
+        console.log("transcript is calling now ")
+        const store = transcript.map((elem, idx) => ({
         segmentId: idx,
         start: (elem.offset / 1000 / 60).toFixed(2),
         end: ((elem.duration + elem.offset) / 1000 / 60).toFixed(2),
@@ -42,11 +46,31 @@ export const converUrlToEmbed = asyncHandler(async (req, res) => {
         sourceType: "youtube",
         videoId: videoId,
     }));
-    const transExisted = await Transcript.findOne({ videoId: videoId });
+
     if (transExisted === null) {
         await Transcript.insertMany(store, { ordered: true });
 
+        // converting the whole data into partial data for segmentId, text and for videoId
+        const wholeData = await Transcript.find({
+                sourceType: "youtube",
+                videoId: `${videoId}`,
+            });
+
+        let partial_data = wholeData.map(({ segmentId, text, videoId }) => ({
+                segmentId,
+                text,
+                videoId,
+            }));
+            console.log(partial_data)
+            // we send that partial_data to open ai llm and then we'll get the data as response that we are going to use in the getAndSaveVocabulary(data) fn
+        async function getAndSaveVocabulary(data) {
+            
+            const save = Vocab.insertMany(data);
+        }
+        getAndSaveVocabulary(data);
     }
+       
+
     if (existed === null) {
         existed = await Video.create({
             url: url,
@@ -99,3 +123,6 @@ export const uploadVideo = asyncHandler(async (req, res) => {
         new ApiResponse(200, vMetaData, "Video Uploaded Successfully !")
     );
 });
+
+
+// Rearrange the main function that we made yesterday and check for error handling and all the stuff. We are on-the-way of building` the main function. 
