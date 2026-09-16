@@ -553,7 +553,6 @@ function Navbar() {
                 dark:border-white/[0.08]
               "
             >
-              <DarkModeButton />
             </div>
           </div>
 
