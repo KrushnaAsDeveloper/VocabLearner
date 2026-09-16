@@ -5,6 +5,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadFileOnCloudinary } from "../utils/cloudinary.js";
 import { fetchTranscript } from "youtube-transcript";
 import { Transcript } from "../models/transcript.model.js";
+import { Vocab } from "../models/vocabulary.model.js";
+import data from "../utils/SampleData.json" with { type: "json" };
 
 export const converUrlToEmbed = asyncHandler(async (req, res) => {
     const { url } = req.body;
@@ -34,44 +36,67 @@ export const converUrlToEmbed = asyncHandler(async (req, res) => {
         throw new ApiError(404, "invalid youtube url || url controller");
     let existed = await Video.findOne({ VideoId: videoId, user: req.user._id });
     const transExisted = await Transcript.findOne({ videoId: videoId });
-
-    
-         const transcript = await fetchTranscript(videoId);
-        console.log("transcript is calling now ")
-        const store = transcript.map((elem, idx) => ({
-        segmentId: idx,
-        start: (elem.offset / 1000 / 60).toFixed(2),
-        end: ((elem.duration + elem.offset) / 1000 / 60).toFixed(2),
-        text: elem.text,
-        sourceType: "youtube",
-        videoId: videoId,
-    }));
-
+    let vocabulary; 
     if (transExisted === null) {
+        const transcript = await fetchTranscript(videoId);
+        const store = transcript.map((elem, idx) => ({
+            segmentId: idx,
+            start: Math.round((elem.offset / 1000) * 100) / 100,
+            end: Math.round(((elem.offset + elem.duration) / 1000) * 100) / 100,
+            text: elem.text,
+            sourceType: "youtube",
+            videoId: videoId,
+        }));
         await Transcript.insertMany(store, { ordered: true });
 
         // converting the whole data into partial data for segmentId, text and for videoId
         const wholeData = await Transcript.find({
-                sourceType: "youtube",
-                videoId: `${videoId}`,
-            });
+            sourceType: "youtube",
+            videoId: `${videoId}`,
+        });
 
-        let partial_data = wholeData.map(({ segmentId, text, videoId }) => ({
+        let partial_data = wholeData.map(({ segmentId, text }) => ({
+            segmentId,
+            text
+        }));
+        let timestamps_data = new Map(
+            wholeData.map(({ segmentId, start, end}) => [
                 segmentId,
-                text,
-                videoId,
-            }));
-            console.log(partial_data)
-            // we send that partial_data to open ai llm and then we'll get the data as response that we are going to use in the getAndSaveVocabulary(data) fn
-        async function getAndSaveVocabulary(data) {
-            
-            const save = Vocab.insertMany(data);
-        }
-        getAndSaveVocabulary(data);
+                { start, end},
+            ])
+        );
+
+        /// Now we are using the hardcoded JSON-type data for experimenting with this function, but now we are going to make the LLM. Call. Then data will replace The LLM response 
+            vocabulary = data.map((e) => {
+            const matched = timestamps_data.get(e.segmentId);
+            if (!matched) {
+                throw new ApiError(
+                    404,
+                    "Segment id's not found plz try again !"
+                );
+            }
+            return {
+                segmentId: e.segmentId,
+                vocabulary: e.vocabulary,
+                meaning: e.meaning,
+                type: e.type,
+                example: e.example,
+                revisionQuestions: e.revisionQuestions,
+                start: matched.start,
+                end: matched.end,
+                videoId
+            };
+        });
+
+        // we send that partial_data to open ai llm and then we'll get the data as response that we are going to use in the getAndSaveVocabulary(data) fn
+         await Vocab.insertMany(vocabulary, { ordered: true });
+    } else {
+        // because of the new entry of video in db the transcript is newly added to the db so that the vocab also saved in the db becuase here we Send the data to the LLM when the new entry is there, and we will save that data to the DB. We will use it again and again for the same video. If there is a new video, then we will send again to the LLM.
+         vocabulary = await Vocab.find({ videoId: videoId });
     }
-       
 
     if (existed === null) {
+        // video not exited therefore we add the new video to db
         existed = await Video.create({
             url: url,
             user: req.user._id,
@@ -80,7 +105,7 @@ export const converUrlToEmbed = asyncHandler(async (req, res) => {
     }
 
     res.status(201).json(
-        new ApiResponse(201, existed, "Url converted successfully")
+        new ApiResponse(201, {video : existed, vocabulary}, "Url converted successfully")
     );
 });
 
@@ -101,7 +126,6 @@ export const uploadVideo = asyncHandler(async (req, res) => {
     if (!videoThumbnail) {
         return;
     }
-    // console.log(videoThumbnail) upload video thumbnail
     let vMetaData = await Video.findOne({
         etag: response.etag,
         user: req.user._id,
@@ -124,5 +148,4 @@ export const uploadVideo = asyncHandler(async (req, res) => {
     );
 });
 
-
-// Rearrange the main function that we made yesterday and check for error handling and all the stuff. We are on-the-way of building` the main function. 
+// Rearrange the main function that we made yesterday and check for error handling and all the stuff. We are on-the-way of building` the main function.
