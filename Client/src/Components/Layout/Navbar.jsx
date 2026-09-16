@@ -4,10 +4,10 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import DarkModeButton from "./DarkModeButton";
+import DarkModeButton from "../Layout/DarkModeButton";
 import axios from "axios";
-import { useAuthContext } from "../Context/authContext";
-import owl from "../assets/mascot/owl-mascot-transparent.png";
+import { useAuthContext } from "../../Context/authContext";
+import owl from "../../assets/mascot/owl-mascot-transparent.png";
 import gsap from "gsap";
 import toast from "react-hot-toast";
 

@@ -2,10 +2,10 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import { useVideo } from "../Context/VideoContext";
+import { useVideo } from "../../Context/VideoContext";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import { useAuthContext } from "../Context/authContext";
+import { useAuthContext } from "../../Context/authContext";
 import gsap from "gsap";
 
 function GettingVedioPage() {
@@ -57,13 +57,12 @@ function GettingVedioPage() {
             form,
             { withCredentials: true },
           );
-
           setObject({
-            url: res.data.data.url,
-            title: res.data.data.title,
+            url: res.data.data.video.url,
+            title: res.data.data.video.title,
           });
 
-          localStorage.setItem("url", res.data.data.url);
+          localStorage.setItem("url", res.data.data.video.url);
 
           navigate("/video-player");
 

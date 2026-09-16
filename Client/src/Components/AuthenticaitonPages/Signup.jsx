@@ -10,9 +10,7 @@ import {
   faEnvelope,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-
-import DotSpinner from "../assets/svg/dot.svg?react";
-
+import DotSpinner from "../../assets/svg/dot.svg?react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import gsap from "gsap";

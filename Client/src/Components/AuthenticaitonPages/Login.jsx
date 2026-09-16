@@ -11,8 +11,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
-import DotSpinner from "../assets/svg/dot.svg?react";
-import { useAuthContext } from "../Context/authContext";
+import DotSpinner from "../../assets/svg/dot.svg?react";
+import { useAuthContext } from "../../Context/authContext";
 
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";

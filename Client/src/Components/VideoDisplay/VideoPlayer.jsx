@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useVideo } from '../Context/VideoContext'
-import Vedioloader from "../assets/svg/videoloader.svg?react"
+import { useVideo } from '../../Context/VideoContext'
+import Videoloader from "../../assets/svg/videoloader.svg?react";
 import { Toaster } from 'react-hot-toast'
 function VideoPlyer() {
   const [loaded, setLoaded] = useState(false)
@@ -62,7 +62,7 @@ function VideoPlyer() {
           {object.url ? (
             <div className="relative w-full flex justify-center items-center" style={{ minHeight: 315 }}>
               {!loaded && (
-               <Vedioloader/>
+               <Videoloader/>
               )}
               <iframe
                 width="100%"

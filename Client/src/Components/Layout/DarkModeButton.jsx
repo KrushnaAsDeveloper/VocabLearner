@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ThemeContextProvider } from "../Context/Theme";
+import { ThemeContextProvider } from "../../Context/Theme";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 function DarkModeButton() {

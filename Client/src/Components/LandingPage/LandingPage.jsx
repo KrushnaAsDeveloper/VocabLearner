@@ -18,7 +18,7 @@ import {
 
 import { faYoutube } from "@fortawesome/free-brands-svg-icons";
 
-import owl from "../assets/mascot/owl-mascot-transparent.png";
+import owl from "../../assets/mascot/owl-mascot-transparent.png";
 
 gsap.registerPlugin(ScrollTrigger);
 

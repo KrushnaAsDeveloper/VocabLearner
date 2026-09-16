@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Videoloader from "../assets/svg/videoloader.svg?react";
+import Videoloader from "../../assets/svg/videoloader.svg?react";
 import gsap from "gsap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
