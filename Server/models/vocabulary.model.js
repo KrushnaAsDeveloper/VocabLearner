@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-
+import mongoose from "mongoose";    
 const vocabularySchema = new mongoose.Schema({
     videoId : {
         type : String, 
@@ -28,7 +27,16 @@ const vocabularySchema = new mongoose.Schema({
     revisionQuestions : {
         type : [String], 
         required : true
-    }
+    },  
+     start : {
+        type : Number, 
+        required : true
+    }, 
+    end : {
+        type : Number, 
+        required : true
+    }, 
+
 })
 
 
