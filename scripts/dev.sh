@@ -1,3 +1,2 @@
-echo "Starting Vocab Learner..."
-
+echo "Starting Vocab Learner...Made By KrushnaAsDeveloper"
 npm run dev
