@@ -1,7 +1,7 @@
 {
   "scripts": {
     "client": "cd client && npm run dev",
-    "server": "cd server && npm run dev",
+    "server": "cd server && npm run test",
     "dev": "concurrently \"npm run client\" \"npm run server\""
   },
   "devDependencies": {
