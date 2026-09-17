@@ -20,7 +20,6 @@ app.use(express.static("public"))
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/video", urlRoute)
 app.use("/api/v1/history", historyRoute)
-app.use("/api/v1/vocab", vocabularyExtraction )
 app.use((err, req, res, next)=>{
   const statusCode = err.statusCode || 500
   res.status(statusCode).json({

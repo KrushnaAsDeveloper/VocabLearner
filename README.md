@@ -73,4 +73,38 @@ This is a new project, separate from **cosy_cloud** (MERN Airbnb-clone, currentl
 
 - **Saving the history** users history on the home page where the main functionality of the user starts then we are going to ask the user for 2 things first is vedio title or second is url of youtube vedio then whatever work done that how much vocab we got from this vedio and then practice correct and wrong answer kind of overall activity we are going to save it in the history section
 
-- 
+
+---
+
+### what is the remaining part of the project : 
+
+1. main function with youtube (open AI) video as well as with upload video (whisper)
+2. add one feature on the video play that is to pin the timeframe and go tho that timeframe on click with pins 
+----
+1. We should decrease the cost of tokens for OpenAI. For that, we have to send the relevant data to the OpenAI. We have to convert our MongoDB metadata to the only two main components:
+- segment ID
+- text of the word that we extracted from the video
+```json
+  {
+  "_id": "...",
+  "segmentId": 42,
+  "text": "Emily made a massive mistake at work.",
+  "start": 125.4,
+  "end": 128.2,
+  "sourceType": "youtube",
+  "videoId": "...",
+  "__v": 0,
+  "createdAt": "...",
+  "updatedAt": "..."
+}
+// don't send this data to the open Ai insted convert this data into --
+
+{
+  "segmentId": 42,
+  "text": "Emily made a massive mistake at work."
+}
+```
+Then this document will be sent to OpenAI, which will reduce the cost of the token. 
+2. And one more thing to remember: if we extract all the vocabulary for the same video, and if the user extracts the same video or pastes the same video link (whether it's YouTube or maybe a personal video), then we should keep that data in the response database. The cost of the token will reduce because we are not again sending that data to OpenAI for the same video. We are just using that data again and again from the database. 
+
+3. Whenever we are displaying a word of vocabulary, first of all, we will automatically show the user the meaning and all the important things that it should know. It should be informative to the user. We will also do the option to explore this word more. If Explore can give him options like types and all the grammatical things, then he can explore it more. 
