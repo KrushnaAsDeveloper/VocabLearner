@@ -7,16 +7,22 @@ import { fetchTranscript } from "youtube-transcript";
 import { Transcript } from "../models/transcript.model.js";
 import { Vocab } from "../models/vocabulary.model.js";
 import data from "../utils/SampleData.json" with { type: "json" };
+import { chunkArray, chunkSize } from "../utils/ChunkArray.js";
+import { callLLM } from "../utils/callLLm.js";
 
 export const converUrlToEmbed = asyncHandler(async (req, res) => {
     const { url } = req.body;
+
     if (!url) {
         throw new ApiError(404, "Please enter the url");
     }
+
     if (!url.includes("youtu.be") && !url.includes("youtube.com")) {
         throw new ApiError(404, "Enter the valid youtube link");
     }
+
     let videoId = null;
+
     const patterns = [
         /youtu\.be\/([^?&/]+)/,
         /[?&]v=([^?&/]+)/,
@@ -34,11 +40,16 @@ export const converUrlToEmbed = asyncHandler(async (req, res) => {
 
     if (!videoId)
         throw new ApiError(404, "invalid youtube url || url controller");
-    let existed = await Video.findOne({ VideoId: videoId, user: req.user._id });
-    const transExisted = await Transcript.findOne({ videoId: videoId });
-    let vocabulary; 
+
+    let existed = await Video.findOne({ VideoId: videoId, user: req.user._id }); // here we are finding the video to check for duplicates
+
+    const transExisted = await Transcript.findOne({ videoId: videoId }); // here we are checking in transcription db for implimentation of new video url
+
+    let vocabulary = []; // we are storing here, LLM response
+
     if (transExisted === null) {
-        const transcript = await fetchTranscript(videoId);
+        const transcript = await fetchTranscript(videoId); // here we are using the youtube-transcript npm package
+
         const store = transcript.map((elem, idx) => ({
             segmentId: idx,
             start: Math.round((elem.offset / 1000) * 100) / 100,
@@ -47,52 +58,64 @@ export const converUrlToEmbed = asyncHandler(async (req, res) => {
             sourceType: "youtube",
             videoId: videoId,
         }));
-        await Transcript.insertMany(store, { ordered: true });
 
-        // converting the whole data into partial data for segmentId, text and for videoId
-        const wholeData = await Transcript.find({
+        let items = await Transcript.insertMany(store, { ordered: true });
+
+        // converting the whole data into partial data for getting the json data of only segmentId, text to reduces the input token
+        const allData = await Transcript.find({
+            // here we are fetching the all data from the transcript db by targeting the videoId and sourceType
             sourceType: "youtube",
             videoId: `${videoId}`,
         });
 
-        let partial_data = wholeData.map(({ segmentId, text }) => ({
+        let partial_data = allData.map(({ segmentId, text }) => ({
             segmentId,
-            text
+            text,
         }));
+
         let timestamps_data = new Map(
-            wholeData.map(({ segmentId, start, end}) => [
+            // here we are extracting the timestamps from the tarnscript db for same video
+            allData.map(({ segmentId, start, end }) => [
                 segmentId,
-                { start, end},
+                { start, end },
             ])
         );
+        // we chunking array comes from of partial data and then we are sending this chunk of partical data to the llm for context limit edge case
+        let chunks = chunkArray(partial_data, chunkSize);
 
-        /// Now we are using the hardcoded JSON-type data for experimenting with this function, but now we are going to make the LLM. Call. Then data will replace The LLM response 
-            vocabulary = data.map((e) => {
-            const matched = timestamps_data.get(e.segmentId);
-            if (!matched) {
-                throw new ApiError(
-                    404,
-                    "Segment id's not found plz try again !"
-                );
-            }
-            return {
-                segmentId: e.segmentId,
-                vocabulary: e.vocabulary,
-                meaning: e.meaning,
-                type: e.type,
-                example: e.example,
-                revisionQuestions: e.revisionQuestions,
-                start: matched.start,
-                end: matched.end,
-                videoId
-            };
-        });
+        let outputLLM;
+
+        for (const chunk of chunks) {
+            outputLLM = await callLLM(chunk);
+
+            let chunkResponseData = outputLLM.map((e) => {
+                const matched = timestamps_data.get(e.segmentId);
+                if (!matched) {
+                    throw new ApiError(
+                        404,
+                        "Segment id's not found plz try again !"
+                    );
+                }
+                return {
+                    segmentId: e.segmentId,
+                    vocabulary: e.vocabulary,
+                    meaning: e.meaning,
+                    type: e.type,
+                    example: e.example,
+                    revisionQuestions: e.revisionQuestions,
+                    start: matched.start,
+                    end: matched.end,
+                    videoId,
+                };
+            });
+            vocabulary.push(...chunkResponseData)
+        }
 
         // we send that partial_data to open ai llm and then we'll get the data as response that we are going to use in the getAndSaveVocabulary(data) fn
-         await Vocab.insertMany(vocabulary, { ordered: true });
+        await Vocab.insertMany(vocabulary, { ordered: true });
     } else {
         // because of the new entry of video in db the transcript is newly added to the db so that the vocab also saved in the db becuase here we Send the data to the LLM when the new entry is there, and we will save that data to the DB. We will use it again and again for the same video. If there is a new video, then we will send again to the LLM.
-         vocabulary = await Vocab.find({ videoId: videoId });
+        vocabulary = await Vocab.find({ videoId: videoId });
     }
 
     if (existed === null) {
@@ -105,7 +128,11 @@ export const converUrlToEmbed = asyncHandler(async (req, res) => {
     }
 
     res.status(201).json(
-        new ApiResponse(201, {video : existed, vocabulary}, "Url converted successfully")
+        new ApiResponse(
+            201,
+            { video: existed, vocabulary },
+            "Url converted successfully"
+        )
     );
 });
 
