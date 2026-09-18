@@ -74,7 +74,7 @@ videoSchema.pre("validate", async function getYouTubeEmbedUrl() {
     || res.data.items[0].snippet.thumbnails.high?.url 
     || res.data.items[0].snippet.thumbnails.default?.url
     this.VideoId = videoId
-    this.url = `https://www.youtube.com/embed/${videoId}`;
+    this.url = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&origin=${process.env.CLIENT_URL_LOCAL}`;
     return
 });
 
