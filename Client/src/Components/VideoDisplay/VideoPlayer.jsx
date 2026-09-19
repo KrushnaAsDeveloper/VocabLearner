@@ -9,6 +9,8 @@ function VideoPlyer() {
   const [loaded, setLoaded] = useState(false);
   const { object, setObject, curretUrl , data} = useVideo();
   const [currentTime, setCurrentTime] = useState(0)
+  const [overlayStaus, setOverlayStaus] = useState(false)
+  const [puauseTimeData, setPauseTimeData] = useState()
   const iframeRef = useRef(null);
   const playerRef = useRef(null);
   const vocabRef = useRef([])
@@ -20,12 +22,17 @@ function VideoPlyer() {
       document.body.appendChild(scriptTag);
     }
   }, []);
+
+   const skipOveraly = ()=> {
+      setOverlayStaus(false)
+      playerRef.current.playVideo()
+  }
   useEffect(()=>{
     const vocab = async () =>{
       const res = await axios.get(`${API_URL}/api/v1/video/fetch_data`, {withCredentials : true})
       // const res = await axios.post(`${API_URL}/api/v1/video/youtube`, {url : object.url}, {withCredentials :true})
       vocabRef.current = res.data.data.map(v=>({...v, shown:false}))
-      console.log(res)
+      
     }
     vocab()
   }, [object.url])
@@ -39,6 +46,7 @@ function VideoPlyer() {
           },
           onStateChange: (e) => {
             if(e.data === window.YT.PlayerState.PLAYING){
+              setOverlayStaus(false)
                   intervelRef.current = setInterval(() => {
                     const currentTimeInSeconds = playerRef.current.getCurrentTime()
                     setCurrentTime(currentTimeInSeconds)
@@ -48,7 +56,9 @@ function VideoPlyer() {
 
                     if (match) {
                 match.shown = true
+                setPauseTimeData(match)
                 playerRef.current.pauseVideo()
+                setOverlayStaus(true)
               }
                   }, 1000);
                 }else{
@@ -75,7 +85,7 @@ function VideoPlyer() {
 
   return (
     <>
-      <Overlay />
+      {overlayStaus ?  <Overlay data={puauseTimeData} skip = {skipOveraly} /> : null}
       <Toaster
         position="top-center"
         reverseOrder={false}
