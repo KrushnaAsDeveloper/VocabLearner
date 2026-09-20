@@ -4,7 +4,7 @@ import gsap from 'gsap'
 
 import explaining from "../../assets/mascot/explaining_owl.png"
 
-function Overlay({ data, skip }) {
+function Overlay({ data, skip, mode=false }) {
   const owlRef = useRef(null)
   const cloudRef = useRef(null)
   const wordRef = useRef(null)
@@ -22,6 +22,7 @@ function Overlay({ data, skip }) {
   const questions = data?.revisionQuestions || []
 
   useEffect(() => {
+    console.log(mode)
     setTypedWord('')
     setTypedMeaning('')
     setTypedExample('')
@@ -223,10 +224,12 @@ function Overlay({ data, skip }) {
           <div className='flex w-full  justify-end
            items-center'>
             <button className='text-xl mx-2 hover:bg-purple-500 cursor-pointer  text-white font-bold w-20 h-10 border p-2 border-[text-purple-300"] flex justify-center items-center rounded-xl' >Next</button>
-            <button className='text-xl mx-2 hover:bg-purple-500 cursor-pointer  text-white font-bold w-20 h-10 border p-2 border-[text-purple-300"] flex justify-center items-center rounded-xl' onClick={skip} >skip</button>
+            {
+              mode ? <button className='text-xl mx-2 hover:bg-purple-500 cursor-pointer  text-white font-bold w-20 h-10 border p-2 border-[text-purple-300"] flex justify-center items-center rounded-xl' onClick={skip} >skip</button> : null
+            }
           </div>
         </div>
-      </div>
+      </div>  
     </div>
   )
 }

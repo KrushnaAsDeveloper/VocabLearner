@@ -1,21 +1,34 @@
 const API_URL = import.meta.env.VITE_API_URL;
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useVideo } from "../../Context/VideoContext";
 import Videoloader from "../../assets/svg/videoloader.svg?react";
 import { Toaster } from "react-hot-toast";
 import Overlay from "../VocabularyDisplayOverlay/Overlay";
-import axios from "axios"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import gsap from "gsap";
+import { faBrain, faFaceSmile } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 function VideoPlyer() {
   const [loaded, setLoaded] = useState(false);
-  const { object, setObject, curretUrl , data} = useVideo();
-  const [currentTime, setCurrentTime] = useState(0)
-  const [overlayStaus, setOverlayStaus] = useState(false)
-  const [puauseTimeData, setPauseTimeData] = useState()
+  const { object, setObject, curretUrl, data } = useVideo();
+  const [currentTime, setCurrentTime] = useState(0);
+  const [overlayStaus, setOverlayStaus] = useState(false);
+  const [skipButtonStatus, setSkipButtonStatus] = useState(true);
+  const [puauseTimeData, setPauseTimeData] = useState();
   const iframeRef = useRef(null);
   const playerRef = useRef(null);
-  const vocabRef = useRef([])
+  const vocabRef = useRef([]);
+  const toggleRef = useRef(null);
+const iconRef = useRef(null);
+  const [mode, setMode] = useState("Normal");
+  const isSerious = mode === "Serious Mode";
   let intervelRef = useRef(null);
-  useEffect( () => {
+  
+  const toggleModeFn = () => {
+    setSkipButtonStatus((prev) => !prev)
+    setMode((prev) => (prev === "Normal" ? "Serious Mode" : "Normal"));
+  };
+  useEffect(() => { 
     if (!window.YT || !window.YT.Player) {
       let scriptTag = document.createElement("script");
       scriptTag.src = "https://www.youtube.com/iframe_api";
@@ -23,19 +36,20 @@ function VideoPlyer() {
     }
   }, []);
 
-   const skipOveraly = ()=> {
-      setOverlayStaus(false)
-      playerRef.current.playVideo()
-  }
-  useEffect(()=>{
-    const vocab = async () =>{
-      const res = await axios.get(`${API_URL}/api/v1/video/fetch_data`, {withCredentials : true})
+  const skipOveraly = () => {
+    setOverlayStaus(false);
+    playerRef.current.playVideo();
+  };
+  useEffect(() => {
+    const vocab = async () => {
+      const res = await axios.get(`${API_URL}/api/v1/video/fetch_data`, {
+        withCredentials: true,
+      });
       // const res = await axios.post(`${API_URL}/api/v1/video/youtube`, {url : object.url}, {withCredentials :true})
-      vocabRef.current = res.data.data.map(v=>({...v, shown:false}))
-      
-    }
-    vocab()
-  }, [object.url])
+      vocabRef.current = res.data.data.map((v) => ({ ...v, shown: false }));
+    };
+    vocab();
+  }, [object.url]);
 
   const createPlayerOnLoadOfiframe = () => {
     const createPlayer = () => {
@@ -45,28 +59,26 @@ function VideoPlyer() {
             console.log("player is operate");
           },
           onStateChange: (e) => {
-            if(e.data === window.YT.PlayerState.PLAYING){
-              setOverlayStaus(false)
-                  intervelRef.current = setInterval(() => {
-                    const currentTimeInSeconds = playerRef.current.getCurrentTime()
-                    setCurrentTime(currentTimeInSeconds)
-                   const match = vocabRef.current.find(
-                (v) => !v.shown && currentTimeInSeconds >= v.start
-              )
+            if (e.data === window.YT.PlayerState.PLAYING) {
+              setOverlayStaus(false);
+              intervelRef.current = setInterval(() => {
+                const currentTimeInSeconds = playerRef.current.getCurrentTime();
+                setCurrentTime(currentTimeInSeconds);
+                const match = vocabRef.current.find(
+                  (v) => !v.shown && currentTimeInSeconds >= v.start,
+                );
 
-                    if (match) {
-                match.shown = true
-                setPauseTimeData(match)
-                playerRef.current.pauseVideo()
-                setOverlayStaus(true)
-              }
-                  }, 1000);
-                }else{
-                  clearInterval(intervelRef.current)
+                if (match) {
+                  match.shown = true;
+                  setPauseTimeData(match);
+                  playerRef.current.pauseVideo();
+                  setOverlayStaus(true);
                 }
-                
-              },
-              
+              }, 1000);
+            } else {
+              clearInterval(intervelRef.current);
+            }
+          },
         },
       });
     };
@@ -77,15 +89,78 @@ function VideoPlyer() {
     }
   };
 
-
   // reset loader whenever a new video url comes in
   useEffect(() => {
     setLoaded(false);
   }, [object.url]);
 
+  useEffect(() => {
+  gsap.to(toggleRef.current, {
+    x: isSerious ? 35 : 4,
+    duration: 0.4,
+    ease: "power3.out",
+  });
+
+  gsap.fromTo(
+    iconRef.current,
+    { scale: 0.5, rotation: -30 },
+    {
+      scale: 1,
+      rotation: 0,
+      duration: 0.4,
+      ease: "back.out(2)",
+    }
+  );
+}, [isSerious]);
   return (
     <>
-      {overlayStaus ?  <Overlay data={puauseTimeData} skip = {skipOveraly} /> : null}
+      
+<div className="absolute right-5 top-20 flex items-center gap-3">
+
+  {/* Mode label and icon */}
+  <div className="flex items-center gap-2 text-sm font-semibold text-white">
+    <FontAwesomeIcon
+      ref={iconRef}
+      icon={isSerious ? faBrain : faFaceSmile}
+      className={`text-lg ${
+        isSerious ? "text-purple-400" : "text-gray-300"
+      }`}
+    />
+
+    <span>{mode}</span>
+  </div>
+
+  {/* Toggle button */}
+  <button
+    onClick={toggleModeFn}
+    aria-label="Toggle serious mode"
+    aria-pressed={isSerious}
+    className={`relative  h-8 w-16 cursor-pointer rounded-full border transition-colors duration-300 ${
+      isSerious
+        ? "border-purple-400/50 bg-purple-600/30 shadow-[0_0_15px_rgba(168,85,247,0.3)]"
+        : "border-white/10 bg-gray-700"
+    }`}
+  >
+    {/* Sliding thumb */}
+    <span
+      ref={toggleRef}
+      className={`absolute left-0 top-1 flex h-6 w-6 items-center justify-center rounded-full shadow-lg ${
+        isSerious
+          ? "bg-purple-400"
+          : "bg-gray-200"
+      }`}
+    >
+      <FontAwesomeIcon
+        icon={isSerious ? faBrain : faFaceSmile}
+        className="text-xs text-gray-900"
+      />
+    </span>
+  </button>
+
+</div>
+      {overlayStaus ? (
+        <Overlay data={puauseTimeData} skip={skipOveraly} mode={skipButtonStatus} />
+      ) : null}
       <Toaster
         position="top-center"
         reverseOrder={false}
