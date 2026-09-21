@@ -23,6 +23,7 @@ const iconRef = useRef(null);
   const [mode, setMode] = useState("Normal");
   const isSerious = mode === "Serious Mode";
   let intervelRef = useRef(null);
+  const styles  = `md:400 600`
   
   const toggleModeFn = () => {
     setSkipButtonStatus((prev) => !prev)
@@ -47,6 +48,7 @@ const iconRef = useRef(null);
       });
       // const res = await axios.post(`${API_URL}/api/v1/video/youtube`, {url : object.url}, {withCredentials :true})
       vocabRef.current = res.data.data.map((v) => ({ ...v, shown: false }));
+      console.log(vocabRef.current)
     };
     vocab();
   }, [object.url]);
@@ -217,8 +219,6 @@ const iconRef = useRef(null);
               {!loaded && <Videoloader />}
               <iframe
                 ref={iframeRef}
-                width="100%"
-                height="600"
                 src={object.url}
                 onLoad={() => {
                   (createPlayerOnLoadOfiframe(), setLoaded(true));
@@ -233,7 +233,7 @@ const iconRef = useRef(null);
             <iframe
               ref={iframeRef}
               width="100%"
-              height="600"
+              height={"550"}
               onLoad={() => {
                 (createPlayerOnLoadOfiframe(), setLoaded(true));
               }}
