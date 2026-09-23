@@ -175,4 +175,9 @@ export const uploadVideo = asyncHandler(async (req, res) => {
     );
 });
 
+export const getData = asyncHandler(async (req, res)=>{
+    const data = await Vocab.find({videoId: "NLH-44UO7K8"})
+
+    res.json(new ApiResponse(200, data, "data"))
+})
 // Rearrange the main function that we made yesterday and check for error handling and all the stuff. We are on-the-way of building` the main function.
