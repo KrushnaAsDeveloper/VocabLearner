@@ -5,7 +5,7 @@ import User from "../models/user.model.js";
 import userRoutes from "../routes/user.route.js"
 import urlRoute from "../routes/video.route.js"
 import historyRoute from "../routes/history.routes.js"
-import vocabularyExtraction from "../routes/vocabulary.routes.js"
+import answersRoute from "../routes/answers.routes.js"
 const app = express();
 
 app.use(cors({
@@ -20,6 +20,7 @@ app.use(express.static("public"))
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/video", urlRoute)
 app.use("/api/v1/history", historyRoute)
+app.use("/api/v1/addAns", answersRoute)
 app.use((err, req, res, next)=>{
   const statusCode = err.statusCode || 500
   res.status(statusCode).json({
