@@ -1,6 +1,7 @@
-
+const API_URL = import.meta.env.VITE_API_URL; 
 import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
+import axios from "axios"
 
 import Buttons from "./Buttons";
 import { useOverlayProps } from "../../Context/overlayContext";
@@ -13,7 +14,7 @@ function Test({ skipOverlay }) {
   const { puauseTimeData, counter, setCounter } = useOverlayProps();
 
   const [answer, setAnswer] = useState({ ans: "" });
-
+  const [allAnswers, setAllAnswers] = useState([])
   const overlayRef = useRef(null);
   const cardRef = useRef(null);
   const owlRef = useRef(null);
@@ -181,6 +182,10 @@ function Test({ skipOverlay }) {
     }
   }, [owlImage]);
 
+  useEffect(()=>{
+console.log(allAnswers)
+    
+  }, [allAnswers])
   // Animate question and progress
   useEffect(() => {
     if (!questionRef.current) return;
@@ -231,12 +236,16 @@ function Test({ skipOverlay }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    console.log(answer);
-
+    const newItem = {
+    question: currentQuestion,
+    ans: answer.ans,
+    questionIndex: counter,
+  };
+    setAllAnswers(prev => [...prev, newItem])
     setAnswer({ ans: "" });
     increase();
   };
+
 
   return (
     <div
