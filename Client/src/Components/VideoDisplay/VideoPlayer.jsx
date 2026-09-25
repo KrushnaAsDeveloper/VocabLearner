@@ -45,7 +45,8 @@ function VideoPlyer() {
     }
   }, []);
 
-  const skipOverlay = () => {
+  const skipOverlay = async (final) => {
+    console.log(final)
     setNext(true);
     setOverlayStatus(false);
     playerRef.current?.playVideo();

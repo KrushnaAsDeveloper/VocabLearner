@@ -225,25 +225,28 @@ console.log(allAnswers)
     });
   };
 
-  const increase = () => {
+  const increase = (updatedAnswer) => {
     if (isLast) {
-      skipOverlay();
-      return;
+      skipOverlay(updatedAnswer);
+    }else{
+      setCounter(prev =>prev+1)
     }
 
-    setCounter((prev) => prev + 1);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newItem = {
     question: currentQuestion,
     ans: answer.ans,
     questionIndex: counter,
   };
-    setAllAnswers(prev => [...prev, newItem])
+  const update = [...allAnswers, newItem]
+    setAllAnswers(update)
     setAnswer({ ans: "" });
-    increase();
+    increase(update);
+      
+      isLast  ? await axios.post(`${API_URL}/api/v1/addAns/saveAllAnswers`,{allAnswers : update} , {withCredentials :true})  : null
   };
 
 

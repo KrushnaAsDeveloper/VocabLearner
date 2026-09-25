@@ -3,15 +3,16 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Answer } from "../models/answers.model.js";
 import {ApiError} from "../utils/ApiError.js"
 export const addAnswerToDb = asyncHandler(async (req, res)=>{
-    const {ans} = req.body;
-    if(!ans){
-        throw new ApiError(404, "No Answers Found !")
-    }
+    const {allAnswers} = req.body;
+    console.log("data", allAnswers)
+    // if(!ans){
+    //     throw new ApiError(404, "No Answers Found !")
+    // }
 
-    const allAnswers = await Answer.insertMany(ans)
+    const final = await Answer.insertMany(allAnswers)
 
 
-    res.status(200).json(new ApiResponse(200, allAnswers, "Answers are added to db"))
+    res.status(200).json(new ApiResponse(200, final, "Answers are added to db"))
 
     
 })
