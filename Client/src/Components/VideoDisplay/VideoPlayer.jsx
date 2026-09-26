@@ -46,7 +46,6 @@ function VideoPlyer() {
   }, []);
 
   const skipOverlay = async (final) => {
-    console.log(final)
     setNext(true);
     setOverlayStatus(false);
     playerRef.current?.playVideo();
@@ -58,7 +57,6 @@ function VideoPlyer() {
         withCredentials: true,
       });
       vocabRef.current = res.data.data.map((v) => ({ ...v, shown: false }));
-      console.log(vocabRef.current);
     };
     vocab();
   }, [object.url]);
@@ -79,7 +77,6 @@ function VideoPlyer() {
       playerRef.current = new YT.Player(iframeRef.current, {
         events: {
           onReady: () => {
-            console.log("player is operate");
           },
           onStateChange: (e) => {
             if (e.data === window.YT.PlayerState.PLAYING) {

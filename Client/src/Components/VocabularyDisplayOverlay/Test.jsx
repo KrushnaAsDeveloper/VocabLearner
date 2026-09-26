@@ -183,7 +183,6 @@ function Test({ skipOverlay }) {
   }, [owlImage]);
 
   useEffect(()=>{
-console.log(allAnswers)
     
   }, [allAnswers])
   // Animate question and progress
@@ -245,8 +244,13 @@ console.log(allAnswers)
     setAllAnswers(update)
     setAnswer({ ans: "" });
     increase(update);
-      
-      isLast  ? await axios.post(`${API_URL}/api/v1/addAns/saveAllAnswers`,{allAnswers : update} , {withCredentials :true})  : null
+      isLast
+  ? await axios.post(
+      `${API_URL}/api/v1/addAns/saveAllAnswers`,
+      { allAnswers: update, vocabId: puauseTimeData._id },
+      { withCredentials: true }
+    )
+  : null;
   };
 
 
