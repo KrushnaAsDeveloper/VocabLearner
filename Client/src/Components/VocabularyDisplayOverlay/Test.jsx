@@ -182,9 +182,7 @@ function Test({ skipOverlay }) {
     }
   }, [owlImage]);
 
-  useEffect(()=>{
-    
-  }, [allAnswers])
+ 
   // Animate question and progress
   useEffect(() => {
     if (!questionRef.current) return;
