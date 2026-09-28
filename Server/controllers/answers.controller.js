@@ -3,7 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Answer } from "../models/answers.model.js";
 import {ApiError} from "../utils/ApiError.js"
 export const addAnswerToDb = asyncHandler(async (req, res) => {
-  const { allAnswers, vocabId } = req.body;
+  const { allAnswers, vocabId, videoId } = req.body;
 
   if (!allAnswers?.length) {
     throw new ApiError(404, "No Answers Found!");
