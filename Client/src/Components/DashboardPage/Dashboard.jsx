@@ -1,4 +1,5 @@
-import React from "react";
+import { useNavigate } from "react-router";
+import { useVideo } from "../../Context/VideoContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBookOpen,
@@ -7,10 +8,12 @@ import {
   faClock,
   faArrowRight,
   faCheckCircle,
+  faPlus, 
   faChevronRight,
-  faPlus,
   faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
+
+
 
 const stats = [
   {
@@ -87,7 +90,14 @@ const weeklyActivity = [
   { day: "Sun", value: 40 },
 ];
 
+
+
 const Dashboard = () => {
+  const navigate = useNavigate()
+  const { object, setObject, curretUrl, data } = useVideo();
+  const navigateToLearn = () =>{
+    navigate("/fetch-video")
+  }
   return (
     <main className="min-h-screen bg-[#05051A] text-[#F8F7FF]">
       <div className="mx-auto max-w-[1500px] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
@@ -118,7 +128,9 @@ const Dashboard = () => {
             </div>
 
             <button
+            onClick={navigateToLearn}
               className="
+              cursor-pointer
                 flex w-fit items-center gap-2
                 rounded-xl
                 bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6]
@@ -239,33 +251,6 @@ const Dashboard = () => {
 
                 {/* Play */}
 
-                <button
-                  className="
-                    absolute
-                    left-1/2
-                    top-1/2
-                    flex
-                    h-14
-                    w-14
-                    -translate-x-1/2
-                    -translate-y-1/2
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-gradient-to-br
-                    from-[#7C3AED]
-                    to-[#9333EA]
-                    text-white
-                    shadow-[0_8px_30px_rgba(124,58,237,0.4)]
-                    transition
-                    hover:scale-110
-                  "
-                >
-                  <FontAwesomeIcon
-                    icon={faPlay}
-                    className="ml-1"
-                  />
-                </button>
 
                 {/* Time */}
 
