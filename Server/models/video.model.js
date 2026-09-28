@@ -25,6 +25,7 @@ const videoSchema = new mongoose.Schema({
     }, 
     videoDuration : {
         type : Number,
+        required: true
     }, 
     etag : {
         type : String,
@@ -64,11 +65,17 @@ videoSchema.pre("validate", async function getYouTubeEmbedUrl() {
     
     // axios call for youtube data api v3 
 
-    const res = await axios.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${process.env.YOUTUBE_API_KEY_V3}`) 
+    const res = await axios.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${videoId}&key=${process.env.YOUTUBE_API_KEY_V3}`) 
 
     if (!res.data.items || res.data.items.length === 0) {
         throw new ApiError(404, "Video on found on youtube")
     }
+    const api_duration = res.data.items[0].contentDetails.duration
+    const toSeconds = (iso) => {
+  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  return (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0);
+    };
+    this.videoDuration = toSeconds(api_duration)
     this.title = res.data.items[0].snippet.title
     this.thumbnail = res.data.items[0].snippet.thumbnails.maxres?.url 
     || res.data.items[0].snippet.thumbnails.high?.url 
