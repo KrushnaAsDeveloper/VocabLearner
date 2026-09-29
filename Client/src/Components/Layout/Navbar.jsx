@@ -553,7 +553,6 @@ function Navbar() {
                 dark:border-white/[0.08]
               "
             >
-              <DarkModeButton />
             </div>
           </div>
 
@@ -754,13 +753,8 @@ function Navbar() {
               gap-2
             "
           >
-            {/* Dark Mode */}
 
-            <div className="mobile-link"  onClick={() => {
-                  setOpen(false);
-                }}>
-              <DarkModeButton />
-            </div>
+           
 
             {/* Login / Logout */}
 
