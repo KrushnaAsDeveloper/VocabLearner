@@ -35,10 +35,8 @@ function GettingVedioPage() {
     setTitle({ ...title, [e.target.name]: e.target.value });
   };
 
-  // video context
   const { currentVideoUrl, setCurrentVideoUrl, object, setObject } = useVideo();
 
-  // auth context
   const { userStatus } = useAuthContext();
 
   const handleFileChange = (e) => {
@@ -57,6 +55,7 @@ function GettingVedioPage() {
             form,
             { withCredentials: true },
           );
+
           setObject({
             url: res.data.data.video.url,
             title: res.data.data.video.title,
@@ -84,9 +83,12 @@ function GettingVedioPage() {
               toasterId: "getting-video",
             });
 
-            const res = await axios.get(`${API_URL}/api/v1/users/re-login`, {
-              withCredentials: true,
-            });
+            const res = await axios.get(
+              `${API_URL}/api/v1/users/re-login`,
+              {
+                withCredentials: true,
+              },
+            );
           } else {
             toast.error(error.response.data.message, {
               toasterId: "getting-video-error",
@@ -138,9 +140,12 @@ function GettingVedioPage() {
               toasterId: "getting-video",
             });
 
-            const res = await axios.get(`${API_URL}/api/v1/users/re-login`, {
-              withCredentials: true,
-            });
+            const res = await axios.get(
+              `${API_URL}/api/v1/users/re-login`,
+              {
+                withCredentials: true,
+              },
+            );
           } else {
             toast.error(error.response.data.message, {
               toasterId: "getting-video-error",
@@ -341,87 +346,87 @@ function GettingVedioPage() {
       ================================= */}
 
       <Toaster
-  position="top-center"
-  reverseOrder={false}
-  gutter={8}
-  toasterId="getting-video"
-  toastOptions={{
-    duration: 3000,
-    removeDelay: 1000,
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        toasterId="getting-video"
+        toastOptions={{
+          duration: 3000,
+          removeDelay: 1000,
 
-    style: {
-      marginTop: "70px",
-      background: "rgba(25, 21, 57, 0.95)",
-      color: "#F5F3FF",
-      border: "1px solid rgba(166, 132, 255, 0.25)",
-      borderRadius: "14px",
-      padding: "14px 18px",
-      fontSize: "14px",
-      fontWeight: "500",
-      boxShadow:
-        "0 10px 40px rgba(0, 0, 0, 0.35), 0 0 20px rgba(139, 92, 246, 0.12)",
-      backdropFilter: "blur(12px)",
-    },
+          style: {
+            marginTop: "70px",
+            background: "rgba(25, 21, 57, 0.95)",
+            color: "#F5F3FF",
+            border: "1px solid rgba(166, 132, 255, 0.25)",
+            borderRadius: "14px",
+            padding: "14px 18px",
+            fontSize: "14px",
+            fontWeight: "500",
+            boxShadow:
+              "0 10px 40px rgba(0, 0, 0, 0.35), 0 0 20px rgba(139, 92, 246, 0.12)",
+            backdropFilter: "blur(12px)",
+          },
 
-    success: {
-      iconTheme: {
-        primary: "#A684FF",
-        secondary: "#191539",
-      },
+          success: {
+            iconTheme: {
+              primary: "#A684FF",
+              secondary: "#191539",
+            },
 
-      style: {
-        marginTop: "70px",
-        background: "linear-gradient(135deg, #191539, #211A4A)",
-        color: "#F5F3FF",
-        border: "1px solid rgba(166, 132, 255, 0.35)",
-        borderRadius: "14px",
-        padding: "14px 18px",
-        boxShadow:
-          "0 10px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(166, 132, 255, 0.15)",
-      },
-    },
-  }}
-/>
+            style: {
+              marginTop: "70px",
+              background: "linear-gradient(135deg, #191539, #211A4A)",
+              color: "#F5F3FF",
+              border: "1px solid rgba(166, 132, 255, 0.35)",
+              borderRadius: "14px",
+              padding: "14px 18px",
+              boxShadow:
+                "0 10px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(166, 132, 255, 0.15)",
+            },
+          },
+        }}
+      />
 
       <Toaster
-  position="top-center"
-  reverseOrder={false}
-  gutter={8}
-  toasterId="getting-video-error"
-  toastOptions={{
-    duration: 4000,
-    removeDelay: 1000,
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        toasterId="getting-video-error"
+        toastOptions={{
+          duration: 4000,
+          removeDelay: 1000,
 
-    style: {
-      marginTop: "70px",
-      background: "rgba(25, 21, 57, 0.96)",
-      color: "#FFECEF",
-      border: "1px solid rgba(255, 107, 129, 0.35)",
-      borderRadius: "16px",
-      padding: "14px 18px",
-      fontSize: "14px",
-      fontWeight: "500",
-      boxShadow:
-        "0 12px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(255, 107, 129, 0.12)",
-      backdropFilter: "blur(14px)",
-    },
+          style: {
+            marginTop: "70px",
+            background: "rgba(25, 21, 57, 0.96)",
+            color: "#FFECEF",
+            border: "1px solid rgba(255, 107, 129, 0.35)",
+            borderRadius: "16px",
+            padding: "14px 18px",
+            fontSize: "14px",
+            fontWeight: "500",
+            boxShadow:
+              "0 12px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(255, 107, 129, 0.12)",
+            backdropFilter: "blur(14px)",
+          },
 
-    error: {
-      style: {
-        background: "linear-gradient(135deg, #24111A, #321421)",
-        color: "#FFECEF",
-        border: "1px solid rgba(255, 107, 129, 0.35)",
-        boxShadow:
-          "0 12px 40px rgba(0, 0, 0, 0.45), 0 0 25px rgba(255, 107, 129, 0.15)",
-      },
+          error: {
+            style: {
+              background: "linear-gradient(135deg, #24111A, #321421)",
+              color: "#FFECEF",
+              border: "1px solid rgba(255, 107, 129, 0.35)",
+              boxShadow:
+                "0 12px 40px rgba(0, 0, 0, 0.45), 0 0 25px rgba(255, 107, 129, 0.15)",
+            },
 
-      iconTheme: {
-        primary: "#FF6B81",
-        secondary: "#24111A",
-      },
-    },
-  }}
-/>
+            iconTheme: {
+              primary: "#FF6B81",
+              secondary: "#24111A",
+            },
+          },
+        }}
+      />
 
       {/* =================================
           PAGE
@@ -434,11 +439,9 @@ function GettingVedioPage() {
           min-h-screen
           overflow-hidden
 
-          bg-white
-          dark:bg-[#010617]
+          bg-[#010617]
 
-          text-slate-900
-          dark:text-white
+          text-white
 
           flex
           flex-col
@@ -447,8 +450,6 @@ function GettingVedioPage() {
           px-4
           pt-20
           pb-24
-
-          transition-colors
         "
       >
         {/* =================================
@@ -468,8 +469,7 @@ function GettingVedioPage() {
 
             rounded-full
 
-            bg-violet-500/10
-            dark:bg-violet-500/[0.09]
+            bg-violet-500/[0.09]
 
             blur-[120px]
           "
@@ -489,8 +489,7 @@ function GettingVedioPage() {
 
             rounded-full
 
-            bg-violet-500/5
-            dark:bg-violet-500/[0.08]
+            bg-violet-500/[0.08]
 
             blur-[110px]
           "
@@ -510,8 +509,7 @@ function GettingVedioPage() {
 
             rounded-full
 
-            bg-indigo-500/5
-            dark:bg-indigo-500/[0.07]
+            bg-indigo-500/[0.07]
 
             blur-[120px]
           "
@@ -540,14 +538,11 @@ function GettingVedioPage() {
                 rounded-full
 
                 border
-                border-violet-200
-                dark:border-violet-500/20
+                border-violet-500/20
 
-                bg-violet-50
-                dark:bg-violet-500/[0.06]
+                bg-violet-500/[0.06]
 
-                text-violet-600
-                dark:text-violet-300
+                text-violet-300
 
                 text-[11px]
                 font-semibold
@@ -601,8 +596,7 @@ function GettingVedioPage() {
 
                 leading-7
 
-                text-slate-500
-                dark:text-slate-400
+                text-slate-400
               "
             >
               Paste a YouTube URL or upload a video file to get started.
@@ -629,14 +623,11 @@ function GettingVedioPage() {
               rounded-2xl
 
               border
-              border-slate-200
-              dark:border-white/[0.08]
+              border-white/[0.08]
 
-              bg-slate-100
-              dark:bg-white/[0.04]
+              bg-white/[0.04]
 
-              shadow-sm
-              dark:shadow-none
+              shadow-none
             "
           >
             {/* Animated indicator */}
@@ -684,7 +675,7 @@ function GettingVedioPage() {
                 ${
                   mode === "url"
                     ? "text-white"
-                    : "text-slate-500 dark:text-slate-400"
+                    : "text-slate-400"
                 }
               `}
             >
@@ -714,7 +705,7 @@ function GettingVedioPage() {
                 ${
                   mode === "upload"
                     ? "text-white"
-                    : "text-slate-500 dark:text-slate-400"
+                    : "text-slate-400"
                 }
               `}
             >
@@ -736,16 +727,13 @@ function GettingVedioPage() {
               rounded-[1.75rem]
 
               border
-              border-slate-200
-              dark:border-white/[0.08]
+              border-white/[0.08]
 
-              bg-white/80
-              dark:bg-white/[0.035]
+              bg-white/[0.035]
 
               backdrop-blur-2xl
 
-              shadow-[0_20px_60px_rgba(15,23,42,0.08)]
-              dark:shadow-[0_20px_60px_rgba(0,0,0,0.3)]
+              shadow-[0_20px_60px_rgba(0,0,0,0.3)]
 
               p-5
               sm:p-7
@@ -783,8 +771,7 @@ function GettingVedioPage() {
                       text-xs
                       font-semibold
 
-                      text-slate-600
-                      dark:text-slate-400
+                      text-slate-400
                     "
                   >
                     YouTube URL
@@ -821,12 +808,10 @@ function GettingVedioPage() {
 
                         w-full
 
-                        bg-slate-50
-                        dark:bg-[#050a18]
+                        bg-[#050a18]
 
                         border
-                        border-slate-200
-                        dark:border-white/[0.08]
+                        border-white/[0.08]
 
                         rounded-xl
 
@@ -835,8 +820,7 @@ function GettingVedioPage() {
 
                         text-sm
 
-                        placeholder:text-slate-400
-                        dark:placeholder:text-slate-600
+                        placeholder:text-slate-600
 
                         focus:outline-none
                         focus:border-violet-500/50
@@ -863,8 +847,7 @@ function GettingVedioPage() {
                       text-xs
                       font-semibold
 
-                      text-slate-600
-                      dark:text-slate-400
+                      text-slate-400
                     "
                   >
                     Video details
@@ -881,12 +864,10 @@ function GettingVedioPage() {
 
                       mb-4
 
-                      bg-slate-50
-                      dark:bg-[#050a18]
+                      bg-[#050a18]
 
                       border
-                      border-slate-200
-                      dark:border-white/[0.08]
+                      border-white/[0.08]
 
                       rounded-xl
 
@@ -895,8 +876,7 @@ function GettingVedioPage() {
 
                       text-sm
 
-                      placeholder:text-slate-400
-                      dark:placeholder:text-slate-600
+                      placeholder:text-slate-600
 
                       focus:outline-none
                       focus:border-violet-500/50
@@ -926,8 +906,7 @@ function GettingVedioPage() {
                       border-2
                       border-dashed
 
-                      border-slate-200
-                      dark:border-white/[0.09]
+                      border-white/[0.09]
 
                       rounded-2xl
 
@@ -936,8 +915,7 @@ function GettingVedioPage() {
 
                       cursor-pointer
 
-                      bg-slate-50/60
-                      dark:bg-white/[0.02]
+                      bg-white/[0.02]
 
                       transition-all
                       duration-300
@@ -959,14 +937,12 @@ function GettingVedioPage() {
 
                         rounded-2xl
 
-                        bg-violet-500/10
-                        dark:bg-violet-500/[0.08]
+                        bg-violet-500/[0.08]
 
                         border
                         border-violet-500/10
 
-                        text-violet-500
-                        dark:text-violet-400
+                        text-violet-400
                       "
                     >
                       <svg
@@ -992,8 +968,7 @@ function GettingVedioPage() {
                         text-sm
                         font-medium
 
-                        text-slate-700
-                        dark:text-slate-300
+                        text-slate-300
                       "
                     >
                       {file ? file.name : "Click to select a video file"}
@@ -1005,8 +980,7 @@ function GettingVedioPage() {
 
                         text-xs
 
-                        text-slate-400
-                        dark:text-slate-500
+                        text-slate-500
                       "
                     >
                       Select a video from your device
@@ -1052,8 +1026,7 @@ function GettingVedioPage() {
                   hover:from-violet-500
                   hover:to-indigo-500
 
-                  disabled:bg-slate-300
-                  dark:disabled:bg-slate-700
+                  disabled:bg-slate-700
 
                   disabled:cursor-not-allowed
 
@@ -1106,8 +1079,7 @@ function GettingVedioPage() {
 
               text-[11px]
 
-              text-slate-400
-              dark:text-slate-600
+              text-slate-600
             "
           >
             Your video will be processed and prepared for vocabulary learning.
@@ -1119,3 +1091,4 @@ function GettingVedioPage() {
 }
 
 export default GettingVedioPage;
+

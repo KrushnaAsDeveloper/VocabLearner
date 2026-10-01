@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -280,8 +279,8 @@ function AboutPage() {
       ref={rootRef}
       className="
         relative min-h-screen overflow-hidden
-        bg-white dark:bg-[#010617]
-        text-slate-900 dark:text-white
+        bg-[#010617]
+        text-white
       "
     >
 
@@ -296,7 +295,7 @@ function AboutPage() {
           h-[450px] w-[450px]
           -translate-x-1/2
           rounded-full
-          bg-violet-500/10 dark:bg-violet-500/10
+          bg-violet-500/10
           blur-[120px]
         "
       />
@@ -308,8 +307,7 @@ function AboutPage() {
           top-[25%] left-[-120px]
           h-[300px] w-[300px]
           rounded-full
-          bg-violet-500/5
-          dark:bg-violet-500/10
+          bg-violet-500/10
           blur-[100px]
         "
       />
@@ -321,8 +319,7 @@ function AboutPage() {
           top-[55%] right-[-120px]
           h-[350px] w-[350px]
           rounded-full
-          bg-indigo-500/5
-          dark:bg-indigo-500/10
+          bg-indigo-500/10
           blur-[110px]
         "
       />
@@ -339,12 +336,9 @@ function AboutPage() {
               inline-flex items-center gap-2
               mb-6 px-4 py-2
               rounded-full
-              border border-violet-200
-              dark:border-violet-500/20
-              bg-violet-50
-              dark:bg-violet-500/[0.07]
-              text-violet-600
-              dark:text-violet-300
+              border border-violet-500/20
+              bg-violet-500/[0.07]
+              text-violet-300
               text-xs font-medium
               tracking-wide
             "
@@ -383,8 +377,7 @@ function AboutPage() {
               max-w-2xl mx-auto
               text-base sm:text-lg
               leading-8
-              text-gray-600
-              dark:text-gray-400
+              text-gray-400
             "
           >
             Paste a video, get its vocabulary extracted, and learn it without ever leaving the video.
@@ -409,10 +402,8 @@ function AboutPage() {
                 group relative overflow-hidden
                 rounded-3xl
                 border
-                border-slate-200
-                dark:border-white/[0.08]
-                bg-slate-50/80
-                dark:bg-white/[0.035]
+                border-white/[0.08]
+                bg-white/[0.035]
                 backdrop-blur-xl
                 p-7
                 transition-colors
@@ -455,7 +446,6 @@ function AboutPage() {
                   mb-6
                   rounded-2xl
                   bg-violet-500/10
-                  dark:bg-violet-500/10
                   border border-violet-500/10
                 "
               >
@@ -463,8 +453,7 @@ function AboutPage() {
                   icon={f.icon}
                   className="
                     feature-icon
-                    text-violet-500
-                    dark:text-violet-400
+                    text-violet-400
                     text-xl
                   "
                 />
@@ -479,8 +468,7 @@ function AboutPage() {
                   relative
                   text-sm
                   leading-7
-                  text-gray-600
-                  dark:text-gray-400
+                  text-gray-400
                 "
               >
                 {f.desc}
@@ -503,8 +491,7 @@ function AboutPage() {
             className="
               text-xs font-semibold
               uppercase tracking-[0.2em]
-              text-violet-500
-              dark:text-violet-400
+              text-violet-400
             "
           >
             Simple workflow
@@ -540,10 +527,8 @@ function AboutPage() {
                 flex gap-5
                 rounded-3xl
                 border
-                border-slate-200
-                dark:border-white/[0.08]
-                bg-slate-50/80
-                dark:bg-white/[0.035]
+                border-white/[0.08]
+                bg-white/[0.035]
                 backdrop-blur-xl
                 p-6
                 transition-colors
@@ -559,10 +544,8 @@ function AboutPage() {
                   w-10 h-10
                   rounded-full
                   bg-violet-500/10
-                  dark:bg-violet-500/10
                   border border-violet-500/20
-                  text-violet-600
-                  dark:text-violet-300
+                  text-violet-300
                   flex items-center justify-center
                   text-sm font-bold
                   shadow-[0_0_20px_rgba(139,92,246,0.08)]
@@ -580,8 +563,7 @@ function AboutPage() {
                   className="
                     text-sm
                     leading-7
-                    text-gray-600
-                    dark:text-gray-400
+                    text-gray-400
                   "
                 >
                   {s.desc}
@@ -606,10 +588,8 @@ function AboutPage() {
             relative overflow-hidden
             rounded-[2rem]
             border
-            border-violet-200
-            dark:border-violet-500/15
-            bg-violet-50/70
-            dark:bg-violet-500/[0.045]
+            border-violet-500/15
+            bg-violet-500/[0.045]
             backdrop-blur-xl
             px-6 sm:px-12
             py-14
@@ -639,8 +619,7 @@ function AboutPage() {
             <p
               className="
                 max-w-xl mx-auto
-                text-gray-600
-                dark:text-gray-400
+                text-gray-400
                 leading-7
               "
             >
@@ -701,3 +680,4 @@ function AboutPage() {
 }
 
 export default AboutPage;
+

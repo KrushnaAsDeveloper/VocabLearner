@@ -1,5 +1,3 @@
-// Navbar.jsx
-
 const API_URL = import.meta.env.VITE_API_URL;
 
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -230,8 +228,8 @@ function Navbar() {
 
     ${
       isActive
-        ? "text-slate-900 dark:text-white"
-        : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+        ? "text-white"
+        : "text-slate-400 hover:text-slate-100"
     }
 
     after:absolute
@@ -266,15 +264,12 @@ function Navbar() {
         z-50
         w-full
 
-        bg-white
-        dark:bg-[#010617]
+        bg-[#010617]
 
         border-b
-        border-slate-200
-        dark:border-white/[0.07]
+        border-white/[0.07]
 
-        shadow-[0_4px_25px_rgba(0,0,0,0.08)]
-        dark:shadow-[0_4px_25px_rgba(0,0,0,0.18)]
+        shadow-[0_4px_25px_rgba(0,0,0,0.18)]
 
         transition-colors
         duration-300
@@ -359,8 +354,7 @@ function Navbar() {
                 font-bold
                 tracking-tight
 
-                text-slate-900
-                dark:text-white
+                text-white
 
                 transition-colors
                 duration-300
@@ -464,13 +458,9 @@ function Navbar() {
                   text-[14px]
                   font-medium
 
-                  text-slate-600
-                  hover:text-slate-900
-                  hover:bg-slate-100
-
-                  dark:text-slate-400
-                  dark:hover:text-white
-                  dark:hover:bg-white/[0.04]
+                  text-slate-400
+                  hover:text-white
+                  hover:bg-white/[0.04]
 
                   transition-all
                   duration-300
@@ -490,13 +480,9 @@ function Navbar() {
                   text-[14px]
                   font-medium
 
-                  text-slate-600
-                  hover:text-slate-900
-                  hover:bg-slate-100
-
-                  dark:text-slate-400
-                  dark:hover:text-white
-                  dark:hover:bg-white/[0.04]
+                  text-slate-400
+                  hover:text-white
+                  hover:bg-white/[0.04]
 
                   transition-all
                   duration-300
@@ -549,8 +535,7 @@ function Navbar() {
                 pl-3
 
                 border-l
-                border-slate-200
-                dark:border-white/[0.08]
+                border-white/[0.08]
               "
             >
             </div>
@@ -575,21 +560,14 @@ function Navbar() {
 
               rounded-lg
 
-              text-slate-700
-              hover:text-slate-900
+              text-slate-300
+              hover:text-white
 
-              dark:text-slate-300
-              dark:hover:text-white
-
-              bg-slate-100
-              hover:bg-slate-200
-
-              dark:bg-white/[0.04]
-              dark:hover:bg-white/[0.08]
+              bg-white/[0.04]
+              hover:bg-white/[0.08]
 
               border
-              border-slate-200
-              dark:border-white/[0.08]
+              border-white/[0.08]
 
               transition-all
               duration-300
@@ -643,12 +621,10 @@ function Navbar() {
 
           overflow-hidden
 
-          bg-white
-          dark:bg-[#010617]
+          bg-[#010617]
 
           border-t
-          border-slate-200
-          dark:border-white/[0.06]
+          border-white/[0.06]
 
           transition-colors
           duration-300
@@ -689,8 +665,8 @@ function Navbar() {
 
                       ${
                         isActive
-                          ? "text-violet-700 bg-violet-50 border border-violet-200 dark:text-white dark:bg-violet-500/10 dark:border-violet-400/10"
-                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/[0.04]"
+                          ? "text-white bg-violet-500/10 border border-violet-400/10"
+                          : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
                       }
                     `}
                   >
@@ -724,8 +700,8 @@ function Navbar() {
 
                         ${
                           isActive
-                            ? "text-violet-700 bg-violet-50 border border-violet-200 dark:text-white dark:bg-violet-500/10 dark:border-violet-400/10"
-                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/[0.04]"
+                            ? "text-white bg-violet-500/10 border border-violet-400/10"
+                            : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
                         }
                       `}
                       onClick={() => {
@@ -745,16 +721,13 @@ function Navbar() {
               pt-4
 
               border-t
-              border-slate-200
-              dark:border-white/[0.06]
+              border-white/[0.06]
 
               flex
               flex-col
               gap-2
             "
           >
-
-           
 
             {/* Login / Logout */}
 
@@ -778,13 +751,9 @@ function Navbar() {
                   text-[14px]
                   font-medium
 
-                  text-slate-600
-                  hover:text-slate-900
-                  hover:bg-slate-100
-
-                  dark:text-slate-400
-                  dark:hover:text-white
-                  dark:hover:bg-white/[0.04]
+                  text-slate-400
+                  hover:text-white
+                  hover:bg-white/[0.04]
 
                   transition-all
                   duration-300
@@ -807,13 +776,9 @@ function Navbar() {
                   text-[14px]
                   font-medium
 
-                  text-slate-600
-                  hover:text-slate-900
-                  hover:bg-slate-100
-
-                  dark:text-slate-400
-                  dark:hover:text-white
-                  dark:hover:bg-white/[0.04]
+                  text-slate-400
+                  hover:text-white
+                  hover:bg-white/[0.04]
 
                   transition-all
                   duration-300
