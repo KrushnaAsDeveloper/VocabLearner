@@ -1,6 +1,8 @@
+const API_URL = import.meta.env.VITE_API_URL;
 import { useNavigate } from "react-router";
 import { useVideo } from "../../Context/VideoContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios"
 import {
   faBookOpen,
   faPlay,
@@ -12,19 +14,48 @@ import {
   faChevronRight,
   faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from "react";
 
 
+
+
+
+
+
+const Dashboard = () => {
+  const navigate = useNavigate()
+  const { object, setObject, curretUrl, data } = useVideo();
+  const [videoWatched , setVideoWatched ] = useState(0)
+  const [wordLerned , setWordLearned ] = useState(0)
+  const navigateToLearn = () =>{
+    navigate("/fetch-video")
+  }
+
+  useEffect(()=>{ const get_dash_data =  async () =>{ 
+   try {
+     const res = await axios.get(`${API_URL}/api/v1/dashboard/data`, {withCredentials : true})
+
+    setVideoWatched(res.data.data.watched)
+    const arrayOfWords = res.data?.data.words?.map(e =>(e.answers))
+    const singleArrayOfAllWords = arrayOfWords.flat()
+    setWordLearned(singleArrayOfAllWords.length)
+   } catch (error) {
+    console.log(error.message)
+   }
+  }
+  get_dash_data()
+}, [])
 
 const stats = [
   {
     title: "Words Learned",
-    value: "248",
+    value: wordLerned,
     change: "+18 this week",
     icon: faBookOpen,
   },
   {
     title: "Videos Watched",
-    value: "18",
+    value: videoWatched,
     change: "+4 this week",
     icon: faPlay,
   },
@@ -89,15 +120,6 @@ const weeklyActivity = [
   { day: "Sat", value: 90 },
   { day: "Sun", value: 40 },
 ];
-
-
-
-const Dashboard = () => {
-  const navigate = useNavigate()
-  const { object, setObject, curretUrl, data } = useVideo();
-  const navigateToLearn = () =>{
-    navigate("/fetch-video")
-  }
   return (
     <main className="min-h-screen bg-[#05051A] text-[#F8F7FF]">
       <div className="mx-auto max-w-[1500px] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
