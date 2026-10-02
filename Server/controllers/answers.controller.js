@@ -9,13 +9,18 @@ export const addAnswerToDb = asyncHandler(async (req, res) => {
     throw new ApiError(404, "No Answers Found!");
   }
 
-  const answersOnly = allAnswers.map((item) => item.ans);
+  let final = await Answer.find({user: req.user?._id, questions:vocabId })
 
-  const final = await Answer.create({
+
+  const answersOnly = allAnswers.map((ans) => ans.ans)
+  if(final.length === 0){
+     final = await Answer.create({
     user: req.user?._id,
     questions: vocabId,
     answers: answersOnly,
+    videoId : videoId
   });
+  }
 
   res.status(200).json(new ApiResponse(200, final, "Answers are added to db"));
 });
