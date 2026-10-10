@@ -12,7 +12,8 @@ export const addAnswerToDb = asyncHandler(async (req, res) => {
   let final = await Answer.find({user: req.user?._id, questions:vocabId })
 
 
-  const answersOnly = allAnswers.map((ans) => ans.ans)
+  const answersOnly = allAnswers.map((item) => item.ans)
+
   if(final.length === 0){
      final = await Answer.create({
     user: req.user?._id,
