@@ -245,7 +245,7 @@ function Test({ skipOverlay }) {
       isLast
   ? await axios.post(
       `${API_URL}/api/v1/addAns/saveAllAnswers`,
-      { allAnswers: update, vocabId: puauseTimeData._id },
+      { allAnswers: update, vocabId: puauseTimeData._id, videoId : puauseTimeData.videoId},
       { withCredentials: true }
     )
   : null;
