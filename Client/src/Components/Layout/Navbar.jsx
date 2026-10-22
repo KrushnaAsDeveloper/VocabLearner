@@ -465,6 +465,7 @@ function Navbar() {
                   transition-all
                   duration-300
                 "
+                title="Logout"
               >
                 Log Out
               </button>
@@ -487,6 +488,7 @@ function Navbar() {
                   transition-all
                   duration-300
                 "
+                title="Login"
               >
                 Log in
               </Link>
@@ -523,6 +525,7 @@ function Navbar() {
                 transition-all
                 duration-300
               "
+              title="Signup"
             >
               Sign up
             </Link>
