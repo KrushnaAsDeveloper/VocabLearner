@@ -1,77 +1,162 @@
+
 const API_URL = import.meta.env.VITE_API_URL;
 
-import React from "react";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import gsap from "gsap";
+import toast, { Toaster } from "react-hot-toast";
 
 import HistoryPageCardForYoutube from "./HistoryPageCardForYoutube";
 import HistoryPageCardForUpload from "./HistoryPageCardForUpload";
 
-import { toast, Toaster } from "react-hot-toast";
-
 function HistoryPage() {
   const [youtubeHistoryData, setYoutubeHistoryData] = useState([]);
   const [uploadHistoryData, setUploadHistoryData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [deletingIds, setDeletingIds] = useState([]);
 
-  const youtubeListRef = useRef(null);
-  const uploadListRef = useRef(null);
   const pageRef = useRef(null);
-
+  const headerRef = useRef(null);
   const youtubeSectionRef = useRef(null);
   const uploadSectionRef = useRef(null);
+  const youtubeListRef = useRef(null);
+  const uploadListRef = useRef(null);
 
-  const headerRef = useRef(null);
-  const youtubeCountRef = useRef(null);
-  const uploadCountRef = useRef(null);
+  // =====================================
+  // FETCH HISTORY
+  // =====================================
 
   useEffect(() => {
-    const fetchHistoryData = async () => {
-      const youtubeHistory = await axios.get(
-        `${API_URL}/api/v1/history/youtube`,
-        { withCredentials: true }
-      );
+    let active = true;
 
-      setYoutubeHistoryData(youtubeHistory.data.data);
+    const fetchHistory = async () => {
+      try {
+        const [youtubeRes, uploadRes] = await Promise.all([
+          axios.get(`${API_URL}/api/v1/history/youtube`, {
+            withCredentials: true,
+          }),
+          axios.get(`${API_URL}/api/v1/history/upload`, {
+            withCredentials: true,
+          }),
+        ]);
 
-      const uploadHistory = await axios.get(
-        `${API_URL}/api/v1/history/upload`,
-        { withCredentials: true }
-      );
+        if (!active) return;
 
-      setUploadHistoryData(uploadHistory.data.data);
+        setYoutubeHistoryData(youtubeRes.data.data || []);
+        setUploadHistoryData(uploadRes.data.data || []);
+      } catch (error) {
+        console.error("Fetch history error:", error);
+
+        if (active) {
+          toast.error(
+            error.response?.data?.message ||
+              "Unable to load history",
+            { toasterId: "history-del" }
+          );
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
     };
 
-    fetchHistoryData();
+    fetchHistory();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
-  /* =========================
-     PAGE INTRO
-  ========================= */
+  // =====================================
+  // DELETE HISTORY
+  // =====================================
+
+  const handleDelete = async (id, type) => {
+    if (!id) {
+      toast.error("Invalid history ID", {
+        toasterId: "history-del",
+      });
+      return;
+    }
+
+    const key = String(id);
+
+    if (deletingIds.includes(key)) return;
+
+    setDeletingIds((prev) => [...prev, key]);
+
+    try {
+      await axios.delete(
+        `${API_URL}/api/v1/history/delete-history/${encodeURIComponent(key)}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (type === "youtube") {
+        setYoutubeHistoryData((prev) =>
+          prev.filter((item) => String(item._id) !== key)
+        );
+      } else {
+        setUploadHistoryData((prev) =>
+          prev.filter((item) => String(item._id) !== key)
+        );
+      }
+
+      toast.success("Video deleted successfully", {
+        toasterId: "history-del",
+      });
+    } catch (error) {
+      console.error("Delete error:", error);
+
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to delete video",
+        {
+          toasterId: "history-del",
+        }
+      );
+    } finally {
+      setDeletingIds((prev) =>
+        prev.filter((item) => item !== key)
+      );
+    }
+  };
+
+  const handleDeleteForYoutube = (id) =>
+    handleDelete(id, "youtube");
+
+  const handleDeleteForUpload = (id) =>
+    handleDelete(id, "upload");
+
+  // =====================================
+  // GSAP PAGE ANIMATIONS
+  // =====================================
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(headerRef.current.children, {
         opacity: 0,
-        y: 25,
-        duration: 0.7,
+        y: 30,
+        duration: 0.8,
         stagger: 0.12,
         ease: "power3.out",
       });
 
       gsap.from(
-        [youtubeSectionRef.current, uploadSectionRef.current],
+        [
+          youtubeSectionRef.current,
+          uploadSectionRef.current,
+        ],
         {
           opacity: 0,
-          y: 40,
+          y: 35,
           duration: 0.8,
           stagger: 0.15,
-          delay: 0.2,
+          delay: 0.25,
           ease: "power3.out",
         }
       );
 
-      /* Floating ambient glow */
       gsap.to(".history-glow-one", {
         x: 70,
         y: 40,
@@ -83,7 +168,7 @@ function HistoryPage() {
 
       gsap.to(".history-glow-two", {
         x: -60,
-        y: -50,
+        y: -40,
         duration: 10,
         repeat: -1,
         yoyo: true,
@@ -94,630 +179,459 @@ function HistoryPage() {
     return () => ctx.revert();
   }, []);
 
-  /* =========================
-     YOUTUBE ROW ANIMATION
-  ========================= */
+  // =====================================
+  // CARD ANIMATIONS
+  // =====================================
 
   useEffect(() => {
-    if (youtubeHistoryData.length && youtubeListRef.current) {
-      gsap.from(youtubeListRef.current.querySelectorAll(".history-card"), {
-        opacity: 0,
-        y: 20,
-        duration: 0.5,
-        ease: "power3.out",
-        stagger: 0.07,
+    const containers = [
+      youtubeListRef.current,
+      uploadListRef.current,
+    ];
+
+    const animations = containers
+      .filter(Boolean)
+      .map((container) => {
+        const cards =
+          container.querySelectorAll(".history-card");
+
+        if (!cards.length) return null;
+
+        return gsap.fromTo(
+          cards,
+          { opacity: 0, y: 15 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.45,
+            stagger: 0.06,
+            ease: "power3.out",
+          }
+        );
       });
-    }
-  }, [youtubeHistoryData]);
 
-  /* =========================
-     UPLOAD ROW ANIMATION
-  ========================= */
+    return () => {
+      animations.forEach((animation) => animation?.kill());
+    };
+  }, [youtubeHistoryData, uploadHistoryData]);
 
-  useEffect(() => {
-    if (uploadHistoryData.length && uploadListRef.current) {
-      gsap.from(uploadListRef.current.querySelectorAll(".history-card"), {
-        opacity: 0,
-        y: 20,
-        duration: 0.5,
-        ease: "power3.out",
-        stagger: 0.07,
-      });
-    }
-  }, [uploadHistoryData]);
+  // =====================================
+  // STATISTICS
+  // =====================================
 
-  /* =========================
-     COUNTER ANIMATION
-  ========================= */
+  const totalVideos =
+    youtubeHistoryData.length + uploadHistoryData.length;
 
-  useEffect(() => {
-    if (youtubeCountRef.current) {
-      gsap.fromTo(
-        youtubeCountRef.current,
-        {
-          scale: 0.7,
-          opacity: 0,
-        },
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 0.5,
-          ease: "back.out(2)",
-        }
-      );
-    }
-
-    if (uploadCountRef.current) {
-      gsap.fromTo(
-        uploadCountRef.current,
-        {
-          scale: 0.7,
-          opacity: 0,
-        },
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 0.5,
-          delay: 0.1,
-          ease: "back.out(2)",
-        }
-      );
-    }
-  }, [youtubeHistoryData.length, uploadHistoryData.length]);
-
-  /* =========================
-     DELETE
-  ========================= */
-
-  const handleDeleteForYoutube = async (id) => {
-    const res = axios.delete(
-      `${API_URL}/api/v1/history/delete-history/${id}`
-    );
-
-    toast.success("Deleted Succesfully", {
-      toasterId: "history-del",
-    });
-
-    setYoutubeHistoryData((prev) =>
-      prev.filter((item) => item._id != id)
-    );
-  };
-
-  const handleDeleteForUpload = async (id) => {
-    const res = axios.delete(
-      `${API_URL}/api/v1/history/delete-history/${id}`
-    );
-
-    toast.success("Deleted Succesfully", {
-      toasterId: "history-del",
-    });
-
-    setUploadHistoryData((prev) =>
-      prev.filter((item) => item._id != id)
-    );
-  };
+  const stats = [
+    {
+      label: "Total Videos",
+      value: totalVideos,
+      color: "text-white",
+    },
+    {
+      label: "YouTube Videos",
+      value: youtubeHistoryData.length,
+      color: "text-violet-300",
+    },
+    {
+      label: "Uploaded Videos",
+      value: uploadHistoryData.length,
+      color: "text-indigo-300",
+    },
+  ];
 
   return (
     <>
+      {/* =====================================
+          TOAST NOTIFICATIONS
+      ===================================== */}
+
       <Toaster
-  position="top-center"
-  reverseOrder={false}
-  gutter={8}
-  toasterId="history-del"
-  toastOptions={{
-    duration: 3000,
-    removeDelay: 1000,
+        position="top-center"
+        toasterId="history-del"
+        toastOptions={{
+          duration: 3500,
+          style: {
+            marginTop: "70px",
+            background: "rgba(25, 21, 57, 0.96)",
+            color: "#F5F3FF",
+            border:
+              "1px solid rgba(166,132,255,0.25)",
+            borderRadius: "14px",
+            padding: "14px 18px",
+            boxShadow:
+              "0 10px 40px rgba(0,0,0,0.4)",
+            backdropFilter: "blur(12px)",
+          },
+          success: {
+            iconTheme: {
+              primary: "#A684FF",
+              secondary: "#191539",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#FF6B81",
+              secondary: "#24111A",
+            },
+          },
+        }}
+      />
 
-    style: {
-      marginTop: "70px",
-      background: "rgba(25, 21, 57, 0.95)",
-      color: "#F5F3FF",
-      border: "1px solid rgba(166, 132, 255, 0.25)",
-      borderRadius: "14px",
-      padding: "14px 18px",
-      fontSize: "14px",
-      fontWeight: "500",
-      boxShadow:
-        "0 10px 40px rgba(0, 0, 0, 0.35), 0 0 20px rgba(139, 92, 246, 0.12)",
-      backdropFilter: "blur(12px)",
-    },
-
-    success: {
-      iconTheme: {
-        primary: "#A684FF",
-        secondary: "#191539",
-      },
-
-      style: {
-        marginTop: "70px",
-        background: "linear-gradient(135deg, #191539, #211A4A)",
-        color: "#F5F3FF",
-        border: "1px solid rgba(166, 132, 255, 0.35)",
-        borderRadius: "14px",
-        padding: "14px 18px",
-        boxShadow:
-          "0 10px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(166, 132, 255, 0.15)",
-      },
-    },
-  }}
-/>
+      {/* =====================================
+          MAIN PAGE
+      ===================================== */}
 
       <div
         ref={pageRef}
         className="
-          relative
-          min-h-screen
-          overflow-hidden
-
-          bg-white
-          dark:bg-[#010617]
-
-          text-slate-900
-          dark:text-white
-
-          px-4
-          py-10
-          sm:py-14
+          relative min-h-screen overflow-hidden
+          bg-[#010617] text-white
+          px-4 pt-20 pb-24
         "
       >
-        {/* =========================
-            BACKGROUND GLOWS
-        ========================= */}
+        {/* BACKGROUND GLOWS */}
 
         <div
           className="
-            pointer-events-none
-            absolute
-            top-[-160px]
-            left-1/2
-            -translate-x-1/2
-
-            h-[420px]
-            w-[420px]
-
-            rounded-full
-            bg-violet-500/10
-            dark:bg-violet-500/[0.08]
-
-            blur-[120px]
+            pointer-events-none absolute
+            -top-44 left-1/2 -translate-x-1/2
+            h-[450px] w-[450px] rounded-full
+            bg-violet-500/[0.09] blur-[120px]
           "
         />
 
         <div
           className="
-            history-glow-one
-            pointer-events-none
-            absolute
-            top-[25%]
-            left-[-180px]
-
-            h-[350px]
-            w-[350px]
-
-            rounded-full
-            bg-violet-500/5
-            dark:bg-violet-500/[0.08]
-
-            blur-[110px]
+            history-glow-one pointer-events-none
+            absolute top-[25%] left-[-180px]
+            h-[350px] w-[350px] rounded-full
+            bg-violet-500/[0.08] blur-[110px]
           "
         />
 
         <div
           className="
-            history-glow-two
-            pointer-events-none
-            absolute
-            bottom-[10%]
-            right-[-180px]
-
-            h-[400px]
-            w-[400px]
-
-            rounded-full
-            bg-indigo-500/5
-            dark:bg-indigo-500/[0.07]
-
-            blur-[120px]
+            history-glow-two pointer-events-none
+            absolute bottom-[5%] right-[-180px]
+            h-[400px] w-[400px] rounded-full
+            bg-indigo-500/[0.07] blur-[120px]
           "
         />
 
-        {/* =========================
-            MAIN CONTENT
-        ========================= */}
+        <div className="relative z-10 mx-auto max-w-6xl">
 
-        <div className="relative max-w-5xl mx-auto">
-
-          {/* HEADER */}
+          {/* =====================================
+              HERO
+          ===================================== */}
 
           <div
             ref={headerRef}
-            className="
-              mb-10
-              text-center
-              sm:text-left
-            "
+            className="mb-10 text-center"
           >
             <div
               className="
-                inline-flex
-                items-center
-                gap-2
-
-                mb-4
-                px-3.5
-                py-1.5
-
-                rounded-full
-
-                border
-                border-violet-200
-                dark:border-violet-500/20
-
-                bg-violet-50
-                dark:bg-violet-500/[0.06]
-
-                text-violet-600
-                dark:text-violet-300
-
-                text-[11px]
-                font-semibold
-                tracking-[0.12em]
-                uppercase
+                mb-5 inline-flex items-center gap-2
+                rounded-full border border-violet-500/20
+                bg-violet-500/[0.06] px-4 py-2
+                text-[11px] font-semibold uppercase
+                tracking-[0.15em] text-violet-300
               "
             >
               <span
                 className="
-                  h-1.5
-                  w-1.5
-                  rounded-full
-                  bg-violet-500
-                  animate-pulse
+                  h-1.5 w-1.5 rounded-full
+                  bg-violet-500 animate-pulse
                 "
               />
-
-              Your learning activity
+              Your Learning Activity
             </div>
 
             <h1
               className="
-                text-3xl
-                sm:text-4xl
-                font-bold
-                tracking-[-0.035em]
+                text-4xl sm:text-5xl font-bold
+                tracking-[-0.04em] leading-tight
               "
             >
-              History
+              Learning{" "}
+              <span
+                className="
+                  bg-gradient-to-r from-violet-500
+                  via-purple-500 to-indigo-500
+                  bg-clip-text text-transparent
+                "
+              >
+                History
+              </span>
             </h1>
 
             <p
               className="
-                mt-2
-                max-w-xl
-
-                text-sm
-                sm:text-base
-
-                leading-7
-
-                text-slate-500
-                dark:text-slate-400
+                mx-auto mt-4 max-w-xl
+                text-sm sm:text-base leading-7
+                text-slate-400
               "
             >
-              Your recently processed videos in one place.
+              Revisit your previously processed videos
+              and continue your vocabulary learning
+              journey.
             </p>
           </div>
 
-          {/* =========================
-              YOUTUBE HISTORY
-          ========================= */}
+          {/* =====================================
+              STATISTICS
+          ===================================== */}
 
           <div
-            ref={youtubeSectionRef}
             className="
-              relative
-              overflow-hidden
-
-              rounded-[1.75rem]
-
-              border
-              border-slate-200
-              dark:border-white/[0.08]
-
-              bg-white/75
-              dark:bg-white/[0.035]
-
-              backdrop-blur-2xl
-
-              shadow-[0_15px_50px_rgba(15,23,42,0.06)]
-              dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
-
-              p-4
-              sm:p-6
-
-              mb-7
+              mb-8 grid grid-cols-1 gap-4
+              sm:grid-cols-3
             "
           >
-            {/* Top accent */}
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className="
+                  rounded-2xl border border-white/[0.08]
+                  bg-white/[0.035] backdrop-blur-2xl
+                  p-5 transition-all duration-300
+                  hover:border-violet-500/25
+                  hover:bg-white/[0.055]
+                "
+              >
+                <p className="text-xs text-slate-400">
+                  {stat.label}
+                </p>
+
+                <h3
+                  className={`mt-2 text-3xl font-bold ${stat.color}`}
+                >
+                  {stat.value}
+                </h3>
+              </div>
+            ))}
+          </div>
+
+          {/* =====================================
+              YOUTUBE HISTORY
+          ===================================== */}
+
+          <section
+            ref={youtubeSectionRef}
+            className="
+              relative mb-8 overflow-hidden
+              rounded-[1.75rem]
+              border border-white/[0.08]
+              bg-white/[0.035] backdrop-blur-2xl
+              p-5 sm:p-7
+              shadow-[0_20px_60px_rgba(0,0,0,0.3)]
+            "
+          >
             <div
               className="
-                absolute
-                top-0
-                left-10
-                right-10
-                h-px
-
-                bg-gradient-to-r
-                from-transparent
-                via-violet-500/40
-                to-transparent
+                absolute top-0 left-10 right-10 h-px
+                bg-gradient-to-r from-transparent
+                via-violet-500/50 to-transparent
               "
             />
 
-            {/* Section Header */}
-
             <div
               className="
-                flex
-                items-center
-                justify-between
-                gap-4
-                px-2
-                mb-4
+                mb-6 flex items-center
+                justify-between gap-4
               "
             >
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <span
-                    className="
-                      flex
-                      items-center
-                      justify-center
-
-                      w-8 h-8
-
-                      rounded-xl
-
-                      bg-red-500/10
-                      dark:bg-red-500/[0.08]
-
-                      text-red-500
-
-                      text-xs
-                      font-bold
-                    "
-                  >
-                    YT
-                  </span>
-
-                  <h2
-                    className="
-                      text-base
-                      sm:text-lg
-                      font-semibold
-                    "
-                  >
-                    Youtube History
-                  </h2>
-                </div>
-
-                <p
+              <div className="flex items-center gap-3">
+                <div
                   className="
-                    mt-1
-                    ml-[42px]
-                    text-[11px]
-                    text-slate-400
-                    dark:text-slate-500
+                    flex h-11 w-11 items-center
+                    justify-center rounded-2xl
+                    border border-violet-500/20
+                    bg-violet-500/10
+                    font-bold text-violet-300
                   "
                 >
-                  Previously watched and processed videos
-                </p>
+                  YT
+                </div>
+
+                <div>
+                  <h2 className="text-lg font-semibold">
+                    YouTube History
+                  </h2>
+
+                  <p className="mt-1 text-xs text-slate-500">
+                    Previously processed videos
+                  </p>
+                </div>
               </div>
 
               <span
-                ref={youtubeCountRef}
                 className="
-                  shrink-0
-
-                  px-3
-                  py-1.5
-
-                  rounded-full
-
-                  bg-violet-500/10
-                  dark:bg-violet-500/[0.08]
-
-                  border
-                  border-violet-500/10
-
-                  text-xs
-                  font-semibold
-
-                  text-violet-600
-                  dark:text-violet-300
+                  shrink-0 rounded-full
+                  border border-violet-500/20
+                  bg-violet-500/10 px-3 py-1.5
+                  text-xs font-semibold text-violet-300
                 "
               >
                 {youtubeHistoryData.length} items
               </span>
             </div>
 
-            {/* Rows */}
-
             <div
               ref={youtubeListRef}
               className="
-                flex
-                flex-col
-
-                divide-y
-                divide-slate-200/70
-                dark:divide-white/[0.06]
+                flex flex-col
+                divide-y divide-white/[0.06]
               "
             >
-              {youtubeHistoryData.map((obj, i) => (
-                <HistoryPageCardForYoutube
-                  key={obj._id}
-                  index={i + 1}
-                  youtubeHistory={obj}
-                  onDelete={handleDeleteForYoutube}
-                />
-              ))}
+              {loading ? (
+                <div className="py-12 text-center text-slate-400">
+                  Loading YouTube history...
+                </div>
+              ) : youtubeHistoryData.length > 0 ? (
+                youtubeHistoryData.map((obj, index) => (
+                  <div
+                    key={obj._id}
+                    className="history-card py-4"
+                  >
+                    <HistoryPageCardForYoutube
+                      index={index + 1}
+                      youtubeHistory={obj}
+                      onDelete={() =>
+                        handleDeleteForYoutube(obj._id)
+                      }
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="py-12 text-center">
+                  <p className="font-medium text-slate-300">
+                    No YouTube history yet
+                  </p>
+
+                  <p className="mt-2 text-sm text-slate-500">
+                    Your processed videos will appear here.
+                  </p>
+                </div>
+              )}
             </div>
-          </div>
+          </section>
 
-          {/* =========================
+          {/* =====================================
               UPLOAD HISTORY
-          ========================= */}
+          ===================================== */}
 
-          <div
+          <section
             ref={uploadSectionRef}
             className="
-              relative
-              overflow-hidden
-
+              relative overflow-hidden
               rounded-[1.75rem]
-
-              border
-              border-slate-200
-              dark:border-white/[0.08]
-
-              bg-white/75
-              dark:bg-white/[0.035]
-
-              backdrop-blur-2xl
-
-              shadow-[0_15px_50px_rgba(15,23,42,0.06)]
-              dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)]
-
-              p-4
-              sm:p-6
+              border border-white/[0.08]
+              bg-white/[0.035] backdrop-blur-2xl
+              p-5 sm:p-7
+              shadow-[0_20px_60px_rgba(0,0,0,0.3)]
             "
           >
-            {/* Top accent */}
             <div
               className="
-                absolute
-                top-0
-                left-10
-                right-10
-                h-px
-
-                bg-gradient-to-r
-                from-transparent
-                via-indigo-500/40
-                to-transparent
+                absolute top-0 left-10 right-10 h-px
+                bg-gradient-to-r from-transparent
+                via-indigo-500/50 to-transparent
               "
             />
 
-            {/* Header */}
-
             <div
               className="
-                flex
-                items-center
-                justify-between
-                gap-4
-                px-2
-                mb-4
+                mb-6 flex items-center
+                justify-between gap-4
               "
             >
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <span
-                    className="
-                      flex
-                      items-center
-                      justify-center
-
-                      w-8 h-8
-
-                      rounded-xl
-
-                      bg-indigo-500/10
-                      dark:bg-indigo-500/[0.08]
-
-                      text-indigo-500
-
-                      text-xs
-                      font-bold
-                    "
-                  >
-                    UP
-                  </span>
-
-                  <h2
-                    className="
-                      text-base
-                      sm:text-lg
-                      font-semibold
-                    "
-                  >
-                    Upload History
-                  </h2>
-                </div>
-
-                <p
+              <div className="flex items-center gap-3">
+                <div
                   className="
-                    mt-1
-                    ml-[42px]
-                    text-[11px]
-                    text-slate-400
-                    dark:text-slate-500
+                    flex h-11 w-11 items-center
+                    justify-center rounded-2xl
+                    border border-indigo-500/20
+                    bg-indigo-500/10
+                    font-bold text-indigo-300
                   "
                 >
-                  Videos uploaded from your device
-                </p>
+                  UP
+                </div>
+
+                <div>
+                  <h2 className="text-lg font-semibold">
+                    Upload History
+                  </h2>
+
+                  <p className="mt-1 text-xs text-slate-500">
+                    Videos uploaded from your device
+                  </p>
+                </div>
               </div>
 
               <span
-                ref={uploadCountRef}
                 className="
-                  shrink-0
-
-                  px-3
-                  py-1.5
-
-                  rounded-full
-
-                  bg-violet-500/10
-                  dark:bg-violet-500/[0.08]
-
-                  border
-                  border-violet-500/10
-
-                  text-xs
-                  font-semibold
-
-                  text-violet-600
-                  dark:text-violet-300
+                  shrink-0 rounded-full
+                  border border-indigo-500/20
+                  bg-indigo-500/10 px-3 py-1.5
+                  text-xs font-semibold text-indigo-300
                 "
               >
                 {uploadHistoryData.length} items
               </span>
             </div>
 
-            {/* Rows */}
-
             <div
               ref={uploadListRef}
               className="
-                flex
-                flex-col
-
-                divide-y
-                divide-slate-200/70
-                dark:divide-white/[0.06]
+                flex flex-col
+                divide-y divide-white/[0.06]
               "
             >
-              {uploadHistoryData.map((obj, i) => (
-                <HistoryPageCardForUpload
-                  key={obj._id}
-                  index={i + 1}
-                  uploadHistory={obj}
-                  onDelete={handleDeleteForUpload}
-                />
-              ))}
+              {loading ? (
+                <div className="py-12 text-center text-slate-400">
+                  Loading upload history...
+                </div>
+              ) : uploadHistoryData.length > 0 ? (
+                uploadHistoryData.map((obj, index) => (
+                  <div
+                    key={obj._id}
+                    className="history-card py-4"
+                  >
+                    <HistoryPageCardForUpload
+                      index={index + 1}
+                      uploadHistory={obj}
+                      onDelete={() =>
+                        handleDeleteForUpload(obj._id)
+                      }
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="py-12 text-center">
+                  <p className="font-medium text-slate-300">
+                    No uploaded videos yet
+                  </p>
+
+                  <p className="mt-2 text-sm text-slate-500">
+                    Your uploaded videos will appear here.
+                  </p>
+                </div>
+              )}
             </div>
-          </div>
+          </section>
+
+          {/* FOOTER */}
+
+          <p
+            className="
+              mt-8 text-center text-[11px]
+              text-slate-600
+            "
+          >
+            Your learning journey, all in one place.
+          </p>
         </div>
       </div>
     </>
@@ -725,4 +639,3 @@ function HistoryPage() {
 }
 
 export default HistoryPage;
-
