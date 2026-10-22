@@ -2,7 +2,6 @@ const API_URL = import.meta.env.VITE_API_URL;
 import { useNavigate } from "react-router";
 import { useVideo } from "../../Context/VideoContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import axios from "axios";
 import {
   faBookOpen,
@@ -17,216 +16,136 @@ import {
   faRefresh,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
-
 import {
-  LineChart,
-  Line,
   XAxis,
-  YAxis,
   Tooltip,
-  CartesianGrid,
   ResponsiveContainer,
   BarChart,
   Bar,
-  Cell
+  Cell,
 } from "recharts";
 
+const card = "rounded-2xl border border-[#17133A] bg-[#090820] p-5 sm:p-6";
+const primaryBtn =
+  "flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] text-sm font-semibold text-white transition hover:from-[#8B5CF6] hover:to-[#9333EA]";
+
+const formatDuration = (s = 0) => {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = Math.floor(s % 60);
+  return h
+    ? `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`
+    : `${m}:${String(sec).padStart(2, "0")}`;
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { object, setObject, curretUrl, data } = useVideo();
+  const { setObject } = useVideo();
+
   const [videoWatched, setVideoWatched] = useState(0);
   const [wordLerned, setWordLearned] = useState(0);
   const [refresh, setRefresh] = useState(false);
+  const [overview, setOverview] = useState({
+    recentWords: [],
+    reviewWords: [],
+    weeklyActivity: [],
+    weeklyTotal: 0,
+    streak: 0,
+    totalWordsAvailable: 0,
+    latestVideo: null,
+  });
 
-  const navigateToLearn = () => {
-    navigate("/fetch-video");
-  };
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   useEffect(() => {
-    const get_dash_data = async () => {
-      try {
-        const res = await axios.get(`${API_URL}/api/v1/dashboard/data`, {
-          withCredentials: true,
-        });
+    const load = async () => {
+      const [statsRes, ovRes] = await Promise.allSettled([
+        axios.get(`${API_URL}/api/v1/dashboard/data`, { withCredentials: true }),
+        axios.get(`${API_URL}/api/v1/dashboard/overview`, { withCredentials: true }),
+      ]);
 
-        setVideoWatched(res.data.data.watched);
+      if (statsRes.status === "fulfilled") {
+        const d = statsRes.value.data?.data;
+        setVideoWatched(d?.watched ?? 0);
+        setWordLearned((d?.words ?? []).flatMap((e) => e.answers ?? []).length);
+      } else {
+        console.error("stats failed:", statsRes.reason?.message);
+      }
 
-        const arrayOfWords = res.data?.data.words?.map((e) => e.answers);
-
-        const singleArrayOfAllWords = arrayOfWords.flat();
-
-        setWordLearned(singleArrayOfAllWords.length);
-      } catch (error) {
-        console.log(error.message);
+      if (ovRes.status === "fulfilled") {
+        setOverview(ovRes.value.data.data);
+      } else {
+        console.error("overview failed:", ovRes.reason?.message);
       }
     };
-
-    get_dash_data();
+    load();
   }, [refresh]);
 
-  const handleRefresh = () => {
-    setRefresh((prev) => !prev);
+  const handleRefresh = () => setRefresh((p) => !p);
+  const navigateToLearn = () => navigate("/fetch-video");
+
+  const continueWatching = () => {
+    const v = overview.latestVideo;
+    if (!v) return navigateToLearn();
+    setObject({ url: v.url, title: v.title });
+    navigate("/video-player"); // route where VideoPlyer is rendered
   };
 
   const stats = [
-    {
-      title: "Words Learned",
-      value: wordLerned,
-      change: "+18 this week",
-      icon: faBookOpen,
-    },
-    {
-      title: "Videos Watched",
-      value: videoWatched,
-      change: "+4 this week",
-      icon: faPlay,
-    },
+    { title: "Words Learned", value: wordLerned, change: "Answered in quizzes", icon: faBookOpen },
+    { title: "Videos Watched", value: videoWatched, change: "Total videos", icon: faPlay },
     {
       title: "Day Streak",
-      value: "7",
-      change: "Keep it going!",
+      value: overview.streak,
+      change: overview.streak ? "Keep it going!" : "Add a video today",
       icon: faFire,
     },
-    {
-      title: "Learning Time",
-      value: "12h 34m",
-      change: "+2h this week",
-      icon: faClock,
-    },
+    { title: "Words Available", value: overview.totalWordsAvailable, change: "From your videos", icon: faClock },
   ];
 
-  const reviewWords = [
-    {
-      word: "Resilient",
-      meaning: "Able to recover quickly",
-    },
-    {
-      word: "Implement",
-      meaning: "Put something into action",
-    },
-    {
-      word: "Ubiquitous",
-      meaning: "Present or found everywhere",
-    },
-  ];
-
-  const recentWords = [
-    {
-      word: "Resilient",
-      type: "Adjective",
-      meaning: "Able to recover quickly from difficulties.",
-    },
-    {
-      word: "Implement",
-      type: "Verb",
-      meaning: "To put a plan or idea into action.",
-    },
-    {
-      word: "Ubiquitous",
-      type: "Adjective",
-      meaning: "Present or found everywhere.",
-    },
-    {
-      word: "Concise",
-      type: "Adjective",
-      meaning: "Giving information clearly in few words.",
-    },
-  ];
-
-  const weeklyActivity = [
-    { day: "Mon", value: 2 },
-    { day: "Tue", value: 60 },
-    { day: "Wed", value: 45 },
-    { day: "Thu", value: 80 },
-    { day: "Fri", value: 55 },
-    { day: "Sat", value: 10 },
-    { day: "Sun", value: 40 },
-  ];
-
-const max = Math.max(...weeklyActivity.map((d) => d.value));
+  const reviewWords = overview.reviewWords.map((w) => ({ word: w.vocabulary, meaning: w.meaning }));
+  const recentWords = overview.recentWords.map((w) => ({ word: w.vocabulary, type: w.type, meaning: w.meaning }));
+  const weeklyActivity = overview.weeklyActivity;
+  const max = Math.max(1, ...weeklyActivity.map((d) => d.value));
+  const latest = overview.latestVideo;
 
   return (
     <main className="min-h-screen bg-[#05051A] text-[#F8F7FF]">
       <div className="mx-auto max-w-[1500px] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
-        {/* =====================================================
-            WELCOME
-        ====================================================== */}
-
+        {/* WELCOME */}
         <section className="mb-8">
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
               <div className="mb-3 flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-[#B794F6] shadow-[0_0_12px_rgba(167,139,250,0.8)]" />
-
-                <p className="text-sm font-medium text-[#B794F6]">
-                  Keep learning
-                </p>
+                <p className="text-sm font-medium text-[#B794F6]">Keep learning</p>
               </div>
-
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-[42px]">
-                Good evening, Krushna
+                {greeting}, Krushna
               </h1>
-
               <p className="mt-2 text-sm text-[#8490B0] sm:text-base">
                 Continue building your vocabulary, one word at a time.
               </p>
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Refresh Button */}
               <button
                 onClick={handleRefresh}
-                className="
-                  flex
-                  h-11
-                  w-11
-                  cursor-pointer
-                  items-center
-                  justify-center
-                  rounded-xl
-                  border
-                  border-[#241D4B]
-                  bg-[#090820]
-                  text-[#A78BFA]
-                  transition
-                  hover:border-[#453477]
-                  hover:bg-[#7C3AED]/10
-                  hover:text-[#C4B5FD]
-                "
                 title="Refresh dashboard"
+                className="group flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-[#241D4B] bg-[#090820] text-[#A78BFA] transition hover:border-[#453477] hover:bg-[#7C3AED]/10 hover:text-[#C4B5FD]"
               >
                 <FontAwesomeIcon
                   icon={faRefresh}
-                  className="hover:rotate-90 transition-transform p-3 "
+                  className="transition-transform group-hover:rotate-90"
                 />
               </button>
 
-              {/* Add New Video */}
               <button
                 onClick={navigateToLearn}
-                className="
-                  cursor-pointer
-                  flex
-                  w-fit
-                  items-center
-                  gap-2
-                  rounded-xl
-                  bg-gradient-to-r
-                  from-[#7C3AED]
-                  to-[#8B5CF6]
-                  px-5
-                  py-3
-                  text-sm
-                  font-semibold
-                  text-white
-                  shadow-[0_8px_30px_rgba(124,58,237,0.25)]
-                  transition
-                  hover:scale-[1.02]
-                  hover:from-[#8B5CF6]
-                  hover:to-[#9333EA]
-                "
                 title="Add New Video"
+                className={`${primaryBtn} w-fit cursor-pointer px-5 py-3 shadow-[0_8px_30px_rgba(124,58,237,0.25)] hover:scale-[1.02]`}
               >
                 <FontAwesomeIcon icon={faPlus} />
                 Add New Video
@@ -235,311 +154,120 @@ const max = Math.max(...weeklyActivity.map((d) => d.value));
           </div>
         </section>
 
-        {/* =====================================================
-            STATS
-        ====================================================== */}
-
+        {/* STATS */}
         <section className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
           {stats.map((stat) => (
             <div
               key={stat.title}
-              className="
-                rounded-2xl
-                border
-                border-[#17133A]
-                bg-[#090820]
-                p-5
-                transition
-                duration-300
-                hover:border-[#2A2059]
-                hover:bg-[#0B0925]
-              "
+              className="rounded-2xl border border-[#17133A] bg-[#090820] p-5 transition duration-300 hover:border-[#2A2059] hover:bg-[#0B0925]"
             >
               <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-[#7C3AED]/10">
                 <FontAwesomeIcon icon={stat.icon} className="text-[#A78BFA]" />
               </div>
-
               <p className="text-xs text-[#7180A3] sm:text-sm">{stat.title}</p>
-
-              <h2 className="mt-1 text-2xl font-bold sm:text-3xl">
-                {stat.value}
-              </h2>
-
+              <h2 className="mt-1 text-2xl font-bold sm:text-3xl">{stat.value}</h2>
               <p className="mt-1 text-xs text-[#A78BFA]">{stat.change}</p>
             </div>
           ))}
         </section>
 
-        {/* =====================================================
-            CONTINUE + REVIEW
-        ====================================================== */}
-
+        {/* CONTINUE + REVIEW */}
         <section className="grid gap-5 lg:grid-cols-[1.55fr_1fr]">
-          {/* CONTINUE LEARNING */}
-
-          <div
-            className="
-              rounded-2xl
-              border
-              border-[#17133A]
-              bg-[#090820]
-              p-5
-              sm:p-6
-            "
-          >
-            <div className="mb-5 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">Continue Learning</h2>
-
-                <p className="mt-1 text-xs text-[#7180A3]">
-                  Pick up where you left off
-                </p>
-              </div>
-
-              <button className="text-xs text-[#B794F6] transition hover:text-[#C4B5FD]">
-                View history
-              </button>
+          <div className={card}>
+            <div className="mb-5">
+              <h2 className="text-lg font-semibold">Continue Learning</h2>
+              <p className="mt-1 text-xs text-[#7180A3]">Your latest video</p>
             </div>
 
-            {/* Video Card */}
-
             <div className="overflow-hidden rounded-2xl border border-[#17133A] bg-[#070718]">
-              <div
-                className="
-                  relative
-                  aspect-video
-                  overflow-hidden
-                  bg-gradient-to-br
-                  from-[#25154D]
-                  via-[#130D31]
-                  to-[#070718]
-                "
-              >
-                {/* Glow */}
-
-                <div className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7C3AED]/20 blur-3xl" />
-
-                {/* Play */}
-
-                {/* Time */}
-
-                <span
-                  className="
-                    absolute
-                    bottom-3
-                    left-3
-                    rounded-md
-                    bg-black/70
-                    px-2
-                    py-1
-                    text-xs
-                    text-gray-300
-                  "
-                >
-                  42:18
-                </span>
-
-                {/* Progress */}
-
-                <div className="absolute bottom-0 left-0 h-1 w-full bg-white/5">
-                  <div className="h-full w-[72%] bg-gradient-to-r from-[#7C3AED] to-[#B794F6]" />
-                </div>
+              <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-[#25154D] via-[#130D31] to-[#070718]">
+                {latest?.thumbnail ? (
+                  <img
+                    src={latest.thumbnail}
+                    alt={latest.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7C3AED]/20 blur-3xl" />
+                )}
+                {latest?.duration > 0 && (
+                  <span className="absolute bottom-3 left-3 rounded-md bg-black/70 px-2 py-1 text-xs text-gray-300">
+                    {formatDuration(latest.duration)}
+                  </span>
+                )}
               </div>
 
-              {/* Video information */}
-
               <div className="p-4 sm:p-5">
-                <div className="mb-2 flex items-center gap-2 text-xs text-[#B794F6]">
-                  <span>JavaScript</span>
-
-                  <span className="text-[#38345A]">•</span>
-
-                  <span>Intermediate</span>
-                </div>
-
                 <h3 className="font-semibold sm:text-lg">
-                  JavaScript Full Course for Beginners
+                  {latest?.title || "No videos yet"}
                 </h3>
-
                 <p className="mt-1 text-xs text-[#7180A3]">
-                  Continue from 42:18
+                  {latest ? "Pick up with this video" : "Add a video to get started"}
                 </p>
 
-                {/* Progress */}
-
-                <div className="mt-5 flex items-center gap-3">
-                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/5">
-                    <div className="h-full w-[72%] rounded-full bg-gradient-to-r from-[#7C3AED] to-[#A78BFA]" />
-                  </div>
-
-                  <span className="text-xs text-[#7180A3]">72%</span>
-                </div>
-
                 <button
-                  className="
-                    mt-5
-                    flex
-                    w-full
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-xl
-                    bg-gradient-to-r
-                    from-[#7C3AED]
-                    to-[#8B5CF6]
-                    py-3
-                    text-sm
-                    font-semibold
-                    text-white
-                    transition
-                    hover:from-[#8B5CF6]
-                    hover:to-[#9333EA]
-                  "
+                  onClick={continueWatching}
+                  className={`${primaryBtn} mt-5 w-full cursor-pointer py-3`}
                 >
-                  Continue Watching
+                  {latest ? "Continue Watching" : "Add a Video"}
                   <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
                 </button>
               </div>
             </div>
           </div>
 
-          {/* REVIEW WORDS */}
-
-          <div
-            className="
-              rounded-2xl
-              border
-              border-[#17133A]
-              bg-[#090820]
-              p-5
-              sm:p-6
-            "
-          >
+          <div className={card}>
             <div className="mb-5 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-semibold">Review Words</h2>
-
-                <p className="mt-1 text-xs text-[#7180A3]">
-                  Words ready for revision
-                </p>
+                <p className="mt-1 text-xs text-[#7180A3]">Random words from your videos</p>
               </div>
-
               <span className="rounded-lg bg-[#7C3AED]/10 px-2.5 py-1 text-xs text-[#B794F6]">
-                12 due
+                {reviewWords.length} words
               </span>
             </div>
 
             <div className="space-y-3">
+              {reviewWords.length === 0 && (
+                <p className="text-sm text-[#7180A3]">No words yet.</p>
+              )}
               {reviewWords.map((item) => (
-                <button
+                <div
                   key={item.word}
-                  className="
-                    group
-                    flex
-                    w-full
-                    items-center
-                    justify-between
-                    rounded-xl
-                    border
-                    border-[#17133A]
-                    bg-[#070718]
-                    p-4
-                    text-left
-                    transition
-                    hover:border-[#332568]
-                    hover:bg-[#0D0A2A]
-                  "
+                  className="group flex w-full items-center justify-between rounded-xl border border-[#17133A] bg-[#070718] p-4 text-left transition hover:border-[#332568] hover:bg-[#0D0A2A]"
                 >
                   <div className="min-w-0">
                     <h3 className="font-medium">{item.word}</h3>
-
-                    <p className="mt-1 truncate text-xs text-[#7180A3]">
-                      {item.meaning}
-                    </p>
+                    <p className="mt-1 truncate text-xs text-[#7180A3]">{item.meaning}</p>
                   </div>
-
                   <FontAwesomeIcon
                     icon={faChevronRight}
-                    className="
-                      ml-3
-                      text-xs
-                      text-[#4B4868]
-                      transition
-                      group-hover:text-[#B794F6]
-                    "
+                    className="ml-3 text-xs text-[#4B4868] transition group-hover:text-[#B794F6]"
                   />
-                </button>
+                </div>
               ))}
             </div>
-
-            <button
-              className="
-                mt-5
-                flex
-                w-full
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                border
-                border-[#241D4B]
-                py-3
-                text-sm
-                text-[#A8A8C0]
-                transition
-                hover:border-[#453477]
-                hover:bg-[#7C3AED]/5
-                hover:text-[#B794F6]
-              "
-            >
-              Review All Words
-              <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
-            </button>
           </div>
         </section>
 
-        {/* =====================================================
-            ACTIVITY + RECENT WORDS
-        ====================================================== */}
-
+        {/* ACTIVITY + RECENT WORDS */}
         <section className="mt-5 grid gap-5 lg:grid-cols-[1.25fr_1fr]">
-          {/* WEEKLY ACTIVITY */}
-
-          <div
-            className="
-              rounded-2xl
-              border
-              border-[#17133A]
-              bg-[#090820]
-              p-5
-              sm:p-6
-            "
-          >
+          <div className={card}>
             <div className="mb-7 flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <FontAwesomeIcon
-                    icon={faChartLine}
-                    className="text-sm text-[#A78BFA]"
-                  />
-
+                  <FontAwesomeIcon icon={faChartLine} className="text-sm text-[#A78BFA]" />
                   <h2 className="font-semibold">Weekly Activity</h2>
                 </div>
-
-                <p className="mt-1 text-xs text-[#7180A3]">
-                  Words learned this week
-                </p>
+                <p className="mt-1 text-xs text-[#7180A3]">Words added this week</p>
               </div>
-
               <span className="text-sm font-medium text-[#B794F6]">
-                184 words
+                {overview.weeklyTotal} words
               </span>
             </div>
 
-            {/* Chart */}
-
-            <div className="flex h-62 items-end justify-between gap-2 sm:gap-4">
-              <ResponsiveContainer width="100%" height={300}>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={weeklyActivity} barCategoryGap="30%">
                   <defs>
                     <linearGradient id="barNormal" x1="0" y1="0" x2="0" y2="1">
@@ -551,7 +279,6 @@ const max = Math.max(...weeklyActivity.map((d) => d.value));
                       <stop offset="100%" stopColor="#6d28d9" />
                     </linearGradient>
                   </defs>
-
                   <XAxis
                     dataKey="day"
                     axisLine={false}
@@ -568,16 +295,11 @@ const max = Math.max(...weeklyActivity.map((d) => d.value));
                     labelStyle={{ color: "#fff" }}
                     itemStyle={{ color: "#B794F6" }}
                   />
-
                   <Bar dataKey="value" radius={[12, 12, 0, 0]}>
                     {weeklyActivity.map((d) => (
                       <Cell
                         key={d.day}
-                        fill={
-                          d.value === max
-                            ? "url(#barActive)"
-                            : "url(#barNormal)"
-                        }
+                        fill={d.value === max ? "url(#barActive)" : "url(#barNormal)"}
                       />
                     ))}
                   </Bar>
@@ -586,85 +308,40 @@ const max = Math.max(...weeklyActivity.map((d) => d.value));
             </div>
           </div>
 
-          {/* RECENT VOCABULARY */}
-
-          <div
-            className="
-              rounded-2xl
-              border
-              border-[#17133A]
-              bg-[#090820]
-              p-5
-              sm:p-6
-            "
-          >
-            <div className="mb-5 flex items-center justify-between">
-              <div>
-                <h2 className="font-semibold">Recent Vocabulary</h2>
-
-                <p className="mt-1 text-xs text-[#7180A3]">Your latest words</p>
-              </div>
-
-              <button className="text-xs text-[#B794F6] hover:text-[#C4B5FD]">
-                See all
-              </button>
+          <div className={card}>
+            <div className="mb-5">
+              <h2 className="font-semibold">Recent Vocabulary</h2>
+              <p className="mt-1 text-xs text-[#7180A3]">Your latest words</p>
             </div>
 
             <div className="space-y-1">
+              {recentWords.length === 0 && (
+                <p className="text-sm text-[#7180A3]">No words yet.</p>
+              )}
               {recentWords.map((item) => (
-                <button
+                <div
                   key={item.word}
-                  className="
-                    flex
-                    w-full
-                    items-center
-                    justify-between
-                    rounded-xl
-                    p-3
-                    text-left
-                    transition
-                    hover:bg-[#7C3AED]/5
-                  "
+                  className="flex w-full items-center justify-between rounded-xl p-3 text-left transition hover:bg-[#7C3AED]/5"
                 >
                   <div className="flex min-w-0 items-center gap-3">
-                    <div
-                      className="
-                        flex
-                        h-9
-                        w-9
-                        shrink-0
-                        items-center
-                        justify-center
-                        rounded-lg
-                        bg-[#7C3AED]/10
-                      "
-                    >
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-sm text-[#A78BFA]"
-                      />
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#7C3AED]/10">
+                      <FontAwesomeIcon icon={faCheckCircle} className="text-sm text-[#A78BFA]" />
                     </div>
-
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="text-sm font-medium">{item.word}</h3>
-
                         <span className="hidden text-[10px] text-[#59617D] sm:block">
                           {item.type}
                         </span>
                       </div>
-
-                      <p className="truncate text-xs text-[#7180A3]">
-                        {item.meaning}
-                      </p>
+                      <p className="truncate text-xs text-[#7180A3]">{item.meaning}</p>
                     </div>
                   </div>
-
                   <FontAwesomeIcon
                     icon={faChevronRight}
                     className="ml-2 shrink-0 text-xs text-[#45425F]"
                   />
-                </button>
+                </div>
               ))}
             </div>
           </div>
