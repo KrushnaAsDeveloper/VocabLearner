@@ -7,5 +7,5 @@ const storage = multer.memoryStorage()
 const upload = multer({storage})
 router.post("/youtube",verifyJWT,  converUrlToEmbed)
 router.post("/upload", verifyJWT,  upload.single("video"), uploadVideo)
-router.get('/fetch_data', getData)
+router.get('/fetch_data/:videoId',verifyJWT,  getData)
 export default router
