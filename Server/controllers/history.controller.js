@@ -38,7 +38,7 @@ export const uploadData = asyncHandler(async (req, res)=>{
 export const deleteHistory = asyncHandler(async (req, res)=>{
     const {id} = req.params
     const deleteCard = await Video.findByIdAndDelete(id)
-    res.status(200).json(ApiResponse(200, "History Item Deleted Successfully "))
+    res.status(200).json(new ApiResponse(200, "History Item Deleted Successfully "))
 })
 
 export default router
