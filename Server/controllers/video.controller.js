@@ -6,49 +6,44 @@ import { uploadFileOnCloudinary } from "../utils/cloudinary.js";
 import { fetchTranscript } from "youtube-transcript";
 import { Transcript } from "../models/transcript.model.js";
 import { Vocab } from "../models/vocabulary.model.js";
-import data from "../utils/SampleData.json" with { type: "json" };
 import { chunkArray, chunkSize } from "../utils/ChunkArray.js";
 import { callLLM } from "../utils/callLLm.js";
+import { isValidVocab } from "../utils/validateVocab.js";
 
-export const converUrlToEmbed = asyncHandler(async (req, res) => {
-    const { url } = req.body;
-
-    if (!url) {
-        throw new ApiError(404, "Please enter the url");
-    }
-
-    if (!url.includes("youtu.be") && !url.includes("youtube.com")) {
-        throw new ApiError(404, "Enter the valid youtube link");
-    }
-
-    let videoId = null;
-
+const extractVideoId = (url) => {
     const patterns = [
         /youtu\.be\/([^?&/]+)/,
         /[?&]v=([^?&/]+)/,
         /youtube\.com\/embed\/([^?&/]+)/,
         /youtube\.com\/shorts\/([^?&/]+)/,
     ];
-
     for (const pattern of patterns) {
         const match = url.match(pattern);
-        if (match) {
-            videoId = match[1];
-            break;
-        }
+        if (match) return match[1];
+    }
+    return null;
+};
+
+export const converUrlToEmbed = asyncHandler(async (req, res) => {
+    const { url } = req.body;
+
+    if (!url) throw new ApiError(400, "Please enter the url");
+
+    if (!url.includes("youtu.be") && !url.includes("youtube.com")) {
+        throw new ApiError(400, "Enter the valid youtube link");
     }
 
-    if (!videoId)
-        throw new ApiError(404, "invalid youtube url || url controller");
+    const videoId = extractVideoId(url);
+    if (!videoId) throw new ApiError(400, "Invalid youtube url");
 
-    let existed = await Video.findOne({ VideoId: videoId, user: req.user._id }); // here we are finding the video to check for duplicates
+    let existed = await Video.findOne({ videoId, user: req.user._id });
+    const transExisted = await Transcript.findOne({ videoId });
 
-    const transExisted = await Transcript.findOne({ videoId: videoId }); // here we are checking in transcription db for implimentation of new video url
+    let vocabulary = [];
 
-    let vocabulary = []; // we are storing here, LLM response
-
-    if (transExisted === null) {
-        const transcript = await fetchTranscript(videoId); // here we are using the youtube-transcript npm package
+    if (!transExisted) {
+        // 1. Fetch transcript
+        const transcript = await fetchTranscript(videoId);
 
         const store = transcript.map((elem, idx) => ({
             segmentId: idx,
@@ -56,47 +51,25 @@ export const converUrlToEmbed = asyncHandler(async (req, res) => {
             end: Math.round(((elem.offset + elem.duration) / 1000) * 100) / 100,
             text: elem.text,
             sourceType: "youtube",
-            videoId: videoId,
+            videoId,
         }));
 
-        let items = await Transcript.insertMany(store, { ordered: true });
-
-        // converting the whole data into partial data for getting the json data of only segmentId, text to reduces the input token
-        const allData = await Transcript.find({
-            // here we are fetching the all data from the transcript db by targeting the videoId and sourceType
-            sourceType: "youtube",
-            videoId: `${videoId}`,
-        });
-
-        let partial_data = allData.map(({ segmentId, text }) => ({
-            segmentId,
-            text,
-        }));
-
-        let timestamps_data = new Map(
-            // here we are extracting the timestamps from the tarnscript db for same video
-            allData.map(({ segmentId, start, end }) => [
-                segmentId,
-                { start, end },
-            ])
+        const partialData = store.map(({ segmentId, text }) => ({ segmentId, text }));
+        const timestamps = new Map(
+            store.map(({ segmentId, start, end }) => [segmentId, { start, end }])
         );
-        // we chunking array comes from of partial data and then we are sending this chunk of partical data to the llm for context limit edge case
-        let chunks = chunkArray(partial_data, chunkSize);
 
-        let outputLLM;
+        // 2. Chunk + call LLM (nothing saved yet, so a failure leaves no half-state)
+        const chunks = chunkArray(partialData, chunkSize);
 
         for (const chunk of chunks) {
-            outputLLM = await callLLM(chunk);
+            const outputLLM = await callLLM(chunk);
 
-            let chunkResponseData = outputLLM.map((e) => {
-                const matched = timestamps_data.get(e.segmentId);
-                if (!matched) {
-                    throw new ApiError(
-                        404,
-                        "Segment id's not found plz try again !"
-                    );
-                }
-                return {
+            for (const e of outputLLM) {
+                const matched = timestamps.get(e.segmentId);
+                if (!matched) continue; // skip bad segmentId
+
+                vocabulary.push({
                     segmentId: e.segmentId,
                     vocabulary: e.vocabulary,
                     meaning: e.meaning,
@@ -106,53 +79,52 @@ export const converUrlToEmbed = asyncHandler(async (req, res) => {
                     start: matched.start,
                     end: matched.end,
                     videoId,
-                };
-            });
-            vocabulary.push(...chunkResponseData)
+                });
+            }
         }
 
-        // we send that partial_data to open ai llm and then we'll get the data as response that we are going to use in the getAndSaveVocabulary(data) fn
-        await Vocab.insertMany(vocabulary, { ordered: true });
+        // 3. Validate
+        vocabulary = vocabulary.filter(isValidVocab);
+
+        // 4. Save vocab, then transcript (transcript = "already processed" marker)
+        if (vocabulary.length) {
+            try {
+                await Vocab.insertMany(vocabulary, { ordered: false });
+            } catch (err) {
+                // 11000 = duplicate key (e.g. two users submitted the same video at once)
+                if (err.code !== 11000) throw err;
+            }
+        }
+        await Transcript.insertMany(store, { ordered: true });
     } else {
-        // because of the new entry of video in db the transcript is newly added to the db so that the vocab also saved in the db becuase here we Send the data to the LLM when the new entry is there, and we will save that data to the DB. We will use it again and again for the same video. If there is a new video, then we will send again to the LLM.
-        vocabulary = await Vocab.find({ videoId: videoId });
+        vocabulary = await Vocab.find({ videoId });
     }
 
-    if (existed === null) {
-        // video not exited therefore we add the new video to db
+    // 5. Save the video for this user
+    if (!existed) {
         existed = await Video.create({
-            url: url,
+            url,
+            videoId, // make sure Video schema has: videoId: { type: String }
             user: req.user._id,
             resourceType: "url",
         });
     }
 
     res.status(201).json(
-        new ApiResponse(
-            201,
-            { video: existed, vocabulary },
-            "Url converted successfully"
-        )
+        new ApiResponse(201, { video: existed, vocabulary }, "Url converted successfully")
     );
 });
 
 export const uploadVideo = asyncHandler(async (req, res) => {
     const { title } = req.body;
-    if (!title) {
-        throw new ApiError(400, "Enter title for your video");
-    }
-    if (!req.file) {
-        throw new ApiError(400, "Upload The File First");
-    }
+    if (!title) throw new ApiError(400, "Enter title for your video");
+    if (!req.file) throw new ApiError(400, "Upload The File First");
 
     const response = await uploadFileOnCloudinary(req.file.buffer, "video");
-    if (!response) {
-        throw new ApiError(501, "Error while uploading on cloudinery");
-    }
-    let videoThumbnail = await response.url.replace(".mp4", ".jpg");
-    if (!videoThumbnail) {
-        return;
-    }
+    if (!response) throw new ApiError(501, "Error while uploading on cloudinary");
+
+    const videoThumbnail = response.url.replace(".mp4", ".jpg");
+
     let vMetaData = await Video.findOne({
         etag: response.etag,
         user: req.user._id,
@@ -165,7 +137,7 @@ export const uploadVideo = asyncHandler(async (req, res) => {
             etag: response.etag,
             resourceType: "upload",
             user: req.user._id,
-            title: title,
+            title,
             thumbnail: videoThumbnail,
         });
     }
@@ -175,9 +147,8 @@ export const uploadVideo = asyncHandler(async (req, res) => {
     );
 });
 
-export const getData = asyncHandler(async (req, res)=>{
-    const data = await Vocab.find({videoId: "NLH-44UO7K8"})
-
-    res.json(new ApiResponse(200, data, "data"))
-})
-// Rearrange the main function that we made yesterday and check for error handling and all the stuff. We are on-the-way of building` the main function.
+export const getData = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+    const data = await Vocab.find({ videoId }).sort({ start: 1 });
+    res.json(new ApiResponse(200, data, "data"));
+});
