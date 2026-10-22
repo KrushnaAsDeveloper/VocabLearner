@@ -1,10 +1,13 @@
 import { Router } from "express";
-import { dashboad_data } from "../controllers/dashboard.controller.js";
+import {
+  dashboad_data,
+  getDashboardOverview,
+} from "../controllers/dashboard.controller.js";
 import { verifyJWT } from "../middlewares/verifyJWT.middleware.js";
 
-const router = Router()
+const router = Router();
 
+router.get("/data", verifyJWT, dashboad_data);
+router.get("/overview", verifyJWT, getDashboardOverview); 
 
-router.get("/data", verifyJWT,  dashboad_data)
-
-export default router
+export default router;
