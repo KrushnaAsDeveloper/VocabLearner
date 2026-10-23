@@ -38,6 +38,24 @@ const formatDuration = (s = 0) => {
     : `${m}:${String(sec).padStart(2, "0")}`;
 };
 
+const getGreeting = () => {
+  const h = new Date().getHours();
+  if (h < 5) return "Good night";
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+};
+
+// krushna.waghmare23@gmail.com -> Krushna
+const nameFromEmail = (email = "") => {
+  const local = email.split("@")[0];
+  const first = local.split(/[._\-+]/)[0];
+  const clean = first.replace(/\d+/g, "");
+  return clean
+    ? clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase()
+    : "";
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { setObject } = useVideo();
@@ -46,6 +64,7 @@ const Dashboard = () => {
   const [wordLerned, setWordLearned] = useState(0);
   const [refresh, setRefresh] = useState(false);
   const [overview, setOverview] = useState({
+    email: "",
     recentWords: [],
     reviewWords: [],
     weeklyActivity: [],
@@ -55,9 +74,15 @@ const Dashboard = () => {
     latestVideo: null,
   });
 
-  const hour = new Date().getHours();
-  const greeting =
-    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  // re-render every minute so the greeting stays correct if the tab stays open
+  const [, tick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => tick((n) => n + 1), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const greeting = getGreeting();
+  const firstName = nameFromEmail(overview.email) || "there";
 
   useEffect(() => {
     const load = async () => {
@@ -75,7 +100,7 @@ const Dashboard = () => {
       }
 
       if (ovRes.status === "fulfilled") {
-        setOverview(ovRes.value.data.data);
+        setOverview((prev) => ({ ...prev, ...ovRes.value.data.data }));
       } else {
         console.error("overview failed:", ovRes.reason?.message);
       }
@@ -123,7 +148,7 @@ const Dashboard = () => {
                 <p className="text-sm font-medium text-[#B794F6]">Keep learning</p>
               </div>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-[42px]">
-                {greeting}, Krushna
+                {greeting}, {firstName}
               </h1>
               <p className="mt-2 text-sm text-[#8490B0] sm:text-base">
                 Continue building your vocabulary, one word at a time.
