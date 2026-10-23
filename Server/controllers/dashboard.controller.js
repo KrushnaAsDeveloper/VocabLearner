@@ -74,6 +74,7 @@ export const getDashboardOverview = asyncHandler(async (req, res) => {
         new ApiResponse(
             200,
             {
+                email: req.user.email,
                 recentWords,
                 reviewWords,
                 weeklyActivity: days.map(({ day, value }) => ({ day, value })),
